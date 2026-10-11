@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Blog - Hanifi</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/open-iconic-bootstrap.min.css">
+    <link rel="stylesheet" href="css/animate.css">
+    
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <link rel="stylesheet" href="css/owl.theme.default.min.css">
+    <link rel="stylesheet" href="css/magnific-popup.css">
+
+    <link rel="stylesheet" href="css/aos.css">
+
+    <link rel="stylesheet" href="css/ionicons.min.css">
+    
+    <link rel="stylesheet" href="css/flaticon.css">
+    <link rel="stylesheet" href="css/icomoon.css">
+  <link rel="stylesheet" href="css/style.css">
+  </head>
+   <style>
+    .blog-modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0);
+      overflow-y: auto;
+    }
+
+    .blog-modal.show {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 10vh;
+      background-color: rgba(0, 0, 0, 0.7);
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .blog-modal-content {
+      background-color: #ffffff;
+      padding: 40px;
+      border-radius: 8px;
+      max-width: 700px;
+      width: 90%;
+      max-height: 80vh;
+      height: auto;
+      overflow-y: auto;
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+      animation: slideUp 0.4s ease-out;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      margin-bottom: 100px;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .blog-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      border-bottom: 2px solid #d4af37;
+      padding-bottom: 20px;
+    }
+
+    .blog-modal-header h2 {
+      color: #23243a;
+      font-weight: 700;
+      margin: 0;
+      font-size: 26px;
+      line-height: 1.4;
+      letter-spacing: 0.2px;
+    }
+
+    .blog-modal-close {
+      background: rgba(212, 175, 55, 0.1);
+      border: 2px solid #d4af37;
+      border-radius: 50%;
+      font-size: 24px;
+      color: #d4af37;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: absolute;
+      top: 20px;
+      right: 25px;
+      z-index: 10002;
+      width: 45px;
+      height: 45px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      line-height: 1;
+    }
+
+    .blog-modal-close:hover {
+      background: #d4af37;
+      color: #23243a;
+      transform: rotate(90deg) scale(1.15);
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    }
+
+    .blog-modal-close:active {
+      transform: rotate(90deg) scale(0.95);
+    }
+
+    .blog-modal-meta {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 25px;
+      font-size: 14px;
+      color: #777;
+      flex-wrap: wrap;
+    }
+
+    .blog-modal-meta span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+    }
+
+    .blog-modal-description {
+      color: #555;
+      line-height: 1.9;
+      font-size: 15px;
+      letter-spacing: 0.3px;
+      word-spacing: 0.5px;
+    }
+
+    .blog-modal-description p {
+      margin-bottom: 18px;
+      text-align: justify;
+    }
+
+    .blog-modal-description strong {
+      color: #23243a;
+      font-weight: 700;
+    }
+
+    .blog-modal-image {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .blog-modal-title {
+      margin: 0;
+      color: #23243a;
+      font-weight: 700;
+      font-size: 24px;
+    }
+
+    body.modal-open {
+      overflow: hidden !important;
+    }
+  </style>
+  <body class="page-blog" style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('image/background_blog.jpg') no-repeat center center; background-size: cover; background-attachment: local; transform: translateZ(0); -webkit-transform: translateZ(0); will-change: auto;" data-spy="scroll" data-target=".site-navbar-target" data-offset="300">
+    <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar ftco-navbar-light site-navbar-target" id="ftco-navbar" style="background-color: rgba(35, 36, 58, 0.85) !important;">
+      <div class="container">
+        <a class="navbar-brand" href="index.html" style="color: #d4af37 !important; font-weight: 700;">Hanifi</a>
+        <button class="navbar-toggler js-fh5co-nav-toggle fh5co-nav-toggle" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation" style="border-color: #d4af37;">
+          <span class="oi oi-menu"></span> Menu
+        </button>
+
+        <div class="collapse navbar-collapse" id="ftco-nav">
+          <ul class="navbar-nav nav ml-auto" style="gap: 0.5rem;">
+            <li class="nav-item"><a href="index.html" class="nav-link" style="color: #ffffff !important; font-weight: 500; transition: color 0.3s;"><span>Home</span></a></li>
+            <li class="nav-item"><a href="about.html" class="nav-link" style="color: #ffffff !important; font-weight: 500; transition: color 0.3s;"><span>About</span></a></li>
+            
+            <li class="nav-item"><a href="services.html" class="nav-link" style="color: #ffffff !important; font-weight: 500; transition: color 0.3s;"><span>Services</span></a></li>
+            <li class="nav-item"><a href="skills.html" class="nav-link" style="color: #ffffff !important; font-weight: 500; transition: color 0.3s;"><span>Skills</span></a></li>
+            <li class="nav-item"><a href="projects.html" class="nav-link" style="color: #ffffff !important; font-weight: 500; transition: color 0.3s;"><span>Projects</span></a></li>
+            <li class="nav-item"><a href="gallery.html" class="nav-link" style="color: #ffffff !important; font-weight: 500; transition: color 0.3s;"><span>Gallery</span></a></li>
+            <li class="nav-item active"><a href="blog.html" class="nav-link" style="color: #d4af37 !important; font-weight: 500; transition: color 0.3s;"><span>My Blog</span></a></li>
+            <li class="nav-item"><a href="contact.html" class="nav-link" style="color: #ffffff !important; font-weight: 500; transition: color 0.3s;"><span>Contact</span></a></li>
+            <li class="nav-item"><a href="blog-tr.html" class="nav-link" style="color: #d4af37 !important; font-weight: 500; transition: color 0.3s;" title="Turkish"><span>TR</span></a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <section class="ftco-section" id="blog-section">
+      <div class="container">
+        <div class="row justify-content-center mb-5 pb-5">
+          <div class="col-md-7 heading-section text-center">
+            <h1 class="big big-2" style="color: #ffffff !important; text-shadow: 0 2px 8px rgba(0,0,0,0.5); font-weight: 800;">Blog</h1>
+            <h2 class="mb-4" style="color: #d4af37 !important; font-weight: 700;">Our Blog</h2>
+            <p style="color: #000000; margin-bottom: 1.5em;">"Software is a great combination between artistry and engineering."</p>
+            <div style="text-align: center; color: #d4af37; font-weight: 600; letter-spacing: 0.5px;">
+              <strong>— Bill Gates</strong>
+            </div>
+          </div>
+        </div>
+        <div class="row d-flex">
+          <div class="col-md-4 d-flex blog-card-container">
+            <div class="blog-entry justify-content-end" data-index="0"> 
+              <button type="button" class="block-20 blog-card-btn" style="background-image: url('image/image_1.jpg'); cursor:pointer; display:block; border:none; padding:0; width:100%; height:220px;"></button>
+              <div class="text mt-3 float-right d-block">
+                <div class="d-flex align-items-center mb-3 meta">
+                  <p class="mb-0">
+                    <span class="mr-2">November 14, 2025</span>
+                    <a href="#" class="mr-2">Hanifi</a>
+                  </p>
+                </div>
+                <h3 class="heading"><button type="button" class="blog-title-link blog-card-btn" style="cursor:pointer; background:none; border:none; padding:0; color:inherit; font:inherit;">HTML & CSS Tips for Beginners: Essential Techniques to Get Started</button></h3>
+                <p>Master the fundamentals of web development with practical HTML and CSS tips designed to accelerate your learning journey and build solid foundations.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 d-flex blog-card-container">
+            <div class="blog-entry justify-content-end" data-index="1">
+              <button type="button" class="block-20 blog-card-btn" style="background-image: url('image/image_2.jpg'); cursor:pointer; display:block; border:none; padding:0; width:100%; height:220px;"></button>
+              <div class="text mt-3 float-right d-block">
+                <div class="d-flex align-items-center mb-3 meta">
+                  <p class="mb-0">
+                    <span class="mr-2">November 12, 2025</span>
+                    <a href="#" class="mr-2">Hanifi</a>
+                  </p>
+                </div>
+                <h3 class="heading"><button type="button" class="blog-title-link blog-card-btn" style="cursor:pointer; background:none; border:none; padding:0; color:inherit; font:inherit;">Must-Have VS Code Extensions to Boost Your Productivity</button></h3>
+                <p>Discover the essential VS Code extensions that every developer should have installed to enhance code quality, workflow efficiency, and overall development experience.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 d-flex blog-card-container">
+            <div class="blog-entry" data-index="2">
+              <button type="button" class="block-20 blog-card-btn" style="background-image: url('image/image_3.jpg'); cursor:pointer; display:block; border:none; padding:0; width:100%; height:220px;"></button>
+              <div class="text mt-3 float-right d-block">
+                <div class="d-flex align-items-center mb-3 meta">
+                  <p class="mb-0">
+                    <span class="mr-2">November 10, 2025</span>
+                    <a href="#" class="mr-2">Hanifi</a>
+                  </p>
+                </div>
+                <h3 class="heading"><button type="button" class="blog-title-link blog-card-btn" style="cursor:pointer; background:none; border:none; padding:0; color:inherit; font:inherit;">My Portfolio Design Process: From Concept to Reality</button></h3>
+                <p>Take a deep dive into my portfolio creation journey, exploring the design decisions, challenges overcome, and valuable lessons learned throughout the process.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row d-flex" style="margin-top: 40px;">
+          <div class="col-md-4 d-flex blog-card-container">
+            <div class="blog-entry justify-content-end" data-index="3">
+              <button type="button" class="block-20 blog-card-btn" style="background-image: url('image/frontend_blog.jpg'); cursor:pointer; display:block; border:none; padding:0; width:100%; height:220px;"></button>
+              <div class="text mt-3 float-right d-block">
+                <div class="d-flex align-items-center mb-3 meta">
+                  <p class="mb-0">
+                    <span class="mr-2">November 8, 2025</span>
+                    <a href="#" class="mr-2">Hanifi</a>
+                  </p>
+                </div>
+                <h3 class="heading"><button type="button" class="blog-title-link blog-card-btn" style="cursor:pointer; background:none; border:none; padding:0; color:inherit; font:inherit;">Frontend Development Tools: The Technologies Behind My Projects</button></h3>
+                <p>Explore the comprehensive toolkit I use for frontend projects, including frameworks, libraries, and development tools that enhance productivity and code quality.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 d-flex blog-card-container">
+            <div class="blog-entry justify-content-end" data-index="4">
+              <button type="button" class="block-20 blog-card-btn" style="background-image: url('image/akdeniz_unı.jpeg'); cursor:pointer; display:block; border:none; padding:0; width:100%; height:220px;"></button>
+              <div class="text mt-3 float-right d-block">
+                <div class="d-flex align-items-center mb-3 meta">
+                  <p class="mb-0">
+                    <span class="mr-2">November 6, 2025</span>
+                    <a href="#" class="mr-2">Hanifi</a>
+                  </p>
+                </div>
+                <h3 class="heading"><button type="button" class="blog-title-link blog-card-btn" style="cursor:pointer; background:none; border:none; padding:0; color:inherit; font:inherit;">Studying Computer Programming at Akdeniz University: My Experience</button></h3>
+                <p>Share insights into my academic journey at Akdeniz University, discussing coursework, practical projects, and how university education shaped my development career.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 d-flex blog-card-container">
+            <div class="blog-entry" data-index="5">
+              <button type="button" class="block-20 blog-card-btn" style="background-image: url('image/study_dev.jpg'); cursor:pointer; display:block; border:none; padding:0; width:100%; height:220px;"></button>
+              <div class="text mt-3 float-right d-block">
+                <div class="d-flex align-items-center mb-3 meta">
+                  <p class="mb-0">
+                    <span class="mr-2">November 4, 2025</span>
+                    <a href="#" class="mr-2">Hanifi</a>
+                  </p>
+                </div>
+                <h3 class="heading"><button type="button" class="blog-title-link blog-card-btn" style="cursor:pointer; background:none; border:none; padding:0; color:inherit; font:inherit;">Effective Study Techniques During Exam Season: My Strategy</button></h3>
+                <p>Discover the study methods and time management strategies I use during intensive exam periods to maintain focus, retain knowledge, and achieve academic success.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row d-flex" style="margin-top: 40px;">
+          <div class="col-md-4 d-flex blog-card-container">
+            <div class="blog-entry justify-content-end" data-index="6">
+              <button type="button" class="block-20 blog-card-btn" style="background-image: url('image/stratejilerim.webp'); cursor:pointer; display:block; border:none; padding:0; width:100%; height:220px;"></button>
+              <div class="text mt-3 float-right d-block">
+                <div class="d-flex align-items-center mb-3 meta">
+                  <p class="mb-0">
+                    <span class="mr-2">November 2, 2025</span>
+                    <a href="#" class="mr-2">Hanifi</a>
+                  </p>
+                </div>
+                <h3 class="heading"><button type="button" class="blog-title-link blog-card-btn" style="cursor:pointer; background:none; border:none; padding:0; color:inherit; font:inherit;">Why I Chose Software Development: My Personal Journey</button></h3>
+                <p>Explore the reasons and motivations behind my decision to pursue software development, the challenges I overcame, and why this career path is perfect for me.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 d-flex blog-card-container">
+            <div class="blog-entry justify-content-end" data-index="7">
+              <button type="button" class="block-20 blog-card-btn" style="background-image: url('image/developer_pack.jpg'); cursor:pointer; display:block; border:none; padding:0; width:100%; height:220px;"></button>
+              <div class="text mt-3 float-right d-block">
+                <div class="d-flex align-items-center mb-3 meta">
+                  <p class="mb-0">
+                    <span class="mr-2">October 31, 2025</span>
+                    <a href="#" class="mr-2">Hanifi</a>
+                  </p>
+                </div>
+                <h3 class="heading"><button type="button" class="blog-title-link blog-card-btn" style="cursor:pointer; background:none; border:none; padding:0; color:inherit; font:inherit;">Best Web Developer Background Resource Sites: The Complete Guide</button></h3>
+                <p>A comprehensive collection of the best websites and resources for finding high-quality background images and visual assets for your web development projects.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+    
+
+      </div>
+    </section>
+
+    <footer class="ftco-footer ftco-section">
+      <div class="container">
+        <div class="row mb-5">
+          <div class="col-md">
+            <div class="ftco-footer-widget mb-4">
+              <h2 class="ftco-heading-2">About</h2>
+              <p style="margin-bottom:2.2em;">"Talk is cheap. Show me the code."</p>
+              <div style="text-align:right; margin-bottom:1.2em; font-size:1.08em; color:#000000; font-weight:600; letter-spacing:0.5px;">
+                <strong>– Linus Torvalds</strong>
+              </div>
+              <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-5">
+                <li class="ftco-animate"><a href="https://github.com/hanifigonultas" target="_blank" style="color:#23243a;"><span class="icon ion-logo-github"></span></a></li>
+                <li class="ftco-animate"><a href="https://linkedin.com/in/hanifigonultas" target="_blank" style="color:#0077b5;"><span class="icon ion-logo-linkedin"></span></a></li>
+                <li class="ftco-animate"><a href="https://instagram.com/hanifigonultass" target="_blank" style="color:#e1306c;"><span class="icon ion-logo-instagram"></span></a></li>
+                <li class="ftco-animate"><a href="https://mail.google.com/mail/?view=cm&to=gonultashanifi5@gmail.com" target="_blank" style="color:#d44638;"><span class="icon ion-logo-google"></span></a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md">
+            <div class="ftco-footer-widget mb-4 ml-md-4">
+              <h2 class="ftco-heading-2">Links</h2>
+              <ul class="list-unstyled">
+                <li><a href="index.html"><span class="icon-long-arrow-right mr-2"></span>Home</a></li>
+                <li><a href="about.html"><span class="icon-long-arrow-right mr-2"></span>About</a></li>
+                <li><a href="services.html"><span class="icon-long-arrow-right mr-2"></span>Services</a></li>
+                <li><a href="projects.html"><span class="icon-long-arrow-right mr-2"></span>Projects</a></li>
+                <li><a href="gallery.html"><span class="icon-long-arrow-right mr-2"></span>Gallery</a></li>
+                <li><a href="contact.html"><span class="icon-long-arrow-right mr-2"></span>Contact</a></li>
+                <li><a href="blog.html"><span class="icon-long-arrow-right mr-2"></span>My Blog</a></li>
+                <li><a href="skills.html"><span class="icon-long-arrow-right mr-2"></span>Skills</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md">
+            <div class="ftco-footer-widget mb-4">
+              <h2 class="ftco-heading-2">Services</h2>
+              <ul class="list-unstyled">
+                <li><a href="services.html"><span class="icon-long-arrow-right mr-2"></span>Web Design</a></li>
+                <li><a href="services.html"><span class="icon-long-arrow-right mr-2"></span>Web Development</a></li>
+                <li><a href="services.html"><span class="icon-long-arrow-right mr-2"></span>Business Strategy</a></li>
+                <li><a href="services.html"><span class="icon-long-arrow-right mr-2"></span>Data Analysis</a></li>
+                <li><a href="services.html"><span class="icon-long-arrow-right mr-2"></span>Graphic Design</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md">
+            <div class="ftco-footer-widget mb-4">
+              <h2 class="ftco-heading-2">Have a Questions?</h2>
+              <div class="block-23 mb-3">
+               <ul>
+                  <li><a href="mailto:gonultashanifi5@gmail.com"><span class="icon icon-envelope"></span><span class="text">gonultashanifi5@gmail.com</span></a></li>
+                  <li><a href="https://www.linkedin.com/in/hanifi-gönültaş-59680937b/" target="_blank"><span class="icon icon-linkedin"></span><span class="text">LinkedIn</span></a></li>
+                  <li><span class="icon icon-map-marker"></span><span class="text"> Kültür, 3802. Sk. no:29, 07090 Kepez/Antalya</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12 text-center">
+
+            <p>
+  Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | Design and Development: <strong>Hanifi Gönültaş</strong>
+  </p>
+          </div>
+        </div>
+      </div>
+      <!-- Blog Modal -->
+    </footer>
+
+    <div id="blogModal" class="blog-modal">
+      <div class="blog-modal-content">
+        <button class="blog-modal-close">&times;</button>
+        <img class="blog-modal-image" src="" alt="">
+        <div class="blog-modal-header">
+          <h2 class="blog-modal-title"></h2>
+        </div>
+        <div class="blog-modal-meta"></div>
+        <div class="blog-modal-description"></div>
+      </div>
+    </div>
+  </body>
+
+    <script src="js/jquery.min.js"></script>
+    <script src="js/jquery-migrate-3.0.1.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.easing.1.3.js"></script>
+    <script src="js/jquery.waypoints.min.js"></script>
+    <script src="js/jquery.stellar.min.js"></script>
+    <script src="js/owl.carousel.min.js"></script>
+    <script src="js/jquery.magnific-popup.min.js"></script>
+    <script src="js/aos.js"></script>
+    <script src="js/jquery.animateNumber.min.js"></script>
+    <script src="js/scrollax.min.js"></script>
+    
+  <script src="js/main.js"></script>
+
+  <script>
+    function openBlogModal(modalId) {
+      document.getElementById('blogModal' + modalId).classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeBlogModal(modalId) {
+      document.getElementById('blogModal' + modalId).classList.remove('show');
+      document.body.style.overflow = 'auto';
+    }
+
+    // Close modal when clicking outside the content
+    window.onclick = function(event) {
+      if (event.target.classList.contains('modal-blog')) {
+        event.target.classList.remove('show');
+        document.body.style.overflow = 'auto';
+      }
+    }
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        const modals = document.querySelectorAll('.modal-blog.show');
+        modals.forEach(modal => {
+          modal.classList.remove('show');
+          document.body.style.overflow = 'auto';
+        });
+      }
+    });
+  </script>
+  
+  
+      
+  </body>
+</html>
+
