@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="Hanifi kişisel web sitesi için yerel içerik yönetimi taslağı.">
+  <title>Hanifi Studio — Site Yönetimi</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2323243a'/%3E%3Ctext x='17' y='46' fill='%23d4af37' font-size='42' font-family='Arial'%3Eh%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <script src="data.js" defer></script>
+  <script src="config.js" defer></script>
+  <script src="cloud.js" defer></script>
+  <script src="connection.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">İçeriğe geç</a>
+  <div class="app-shell">
+    <button class="sidebar-backdrop" aria-label="Menüyü kapat" hidden></button>
+    <aside class="sidebar" aria-label="Ana menü">
+      <a class="brand" href="#overview"><span class="brand-mark">h<span>.</span></span><span class="brand-text">hanifi<span class="brand-studio">studio</span><small>İÇERİK YÖNETİMİ</small></span></a>
+      <div class="workspace-switch"><span class="workspace-icon">H</span><span>Kişisel web sitem<small>Portfolyo çalışma alanı</small></span><span class="workspace-indicator"></span></div>
+      <div class="nav-label">ÇALIŞMA ALANI</div>
+      <nav id="navigation"></nav>
+      <div class="sidebar-bottom"><div class="draft-note"><span class="draft-indicator"></span><strong>Taslak çalışma alanı</strong><p>Fikirlerini düzenle, önizle ve sonraki sürüme hazırla.</p><span class="version-tag">Supabase bağlantısı · v0.2</span></div>
+      <div class="user-card"><span class="avatar">HG</span><div><strong id="sidebar-name">Hanifi Gönültaş</strong><small>Kişisel çalışma alanı</small></div></div></div>
+    </aside>
+    <div class="workspace">
+      <header class="topbar">
+        <button class="icon-button mobile-toggle" id="menu-toggle" aria-label="Menüyü aç" aria-expanded="false"></button>
+        <div class="breadcrumb">Çalışma alanı <span>/</span> <strong id="breadcrumb-current">Genel bakış</strong></div>
+        <div class="topbar-actions"><label class="search-box"><span id="search-icon"></span><input id="global-search" type="search" placeholder="İçeriklerde ara..." aria-label="Tüm içeriklerde ara"><kbd>Ctrl K</kbd></label><a class="save-state" href="https://gonultashanifi5-cmd.github.io/Personal_Website/" target="_blank" rel="noopener noreferrer"><i></i>Canlı site ↗</a></div>
+      </header>
+      <main class="main" id="main" tabindex="-1"></main>
+      <footer class="workspace-footer"><span>Hanifi Studio</span><span>Düzenlemeler yerel kaydedilir. Canlı site için Bağlantı ve yayın ekranını kullan.</span></footer>
+    </div>
+  </div>
+  <dialog id="editor-dialog" class="editor-dialog" aria-labelledby="editor-title"></dialog>
+  <dialog id="preview-dialog" class="preview-dialog" aria-labelledby="preview-title"></dialog>
+  <dialog id="confirm-dialog" class="confirm-dialog" aria-labelledby="confirm-title"></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <input id="media-upload" class="screen-reader" type="file" accept="image/png,image/jpeg,image/webp" multiple tabindex="-1">
+  <noscript>Yönetim panelini kullanabilmek için JavaScript'i etkinleştir.</noscript>
+</body>
+</html>
