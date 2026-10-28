@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+    <title>Welcome - Hanifi</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/open-iconic-bootstrap.min.css">
+    <link rel="stylesheet" href="css/animate.css">
+    
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <link rel="stylesheet" href="css/owl.theme.default.min.css">
+    <link rel="stylesheet" href="css/magnific-popup.css">
+
+    <link rel="stylesheet" href="css/aos.css">
+
+    <link rel="stylesheet" href="css/ionicons.min.css">
+    
+    <link rel="stylesheet" href="css/flaticon.css">
+    <link rel="stylesheet" href="css/icomoon.css">
+		<link rel="stylesheet" href="css/style.css">
+  </head>
+	<body class="page-home">
+	  
+	  
+    <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar ftco-navbar-light site-navbar-target" id="ftco-navbar" style="background-color: rgba(35, 36, 58, 0.85) !important;">
+	    <div class="container">
+	      <a class="navbar-brand" href="index.html" style="color: #d4af37 !important; font-weight: 700;">Hanifi</a>
+	      <button class="navbar-toggler js-fh5co-nav-toggle fh5co-nav-toggle" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation" style="border-color: #d4af37;">
+	        <span class="oi oi-menu"></span> Menu
+	      </button>
+
+						<div class="collapse navbar-collapse" id="ftco-nav">
+							<ul class="navbar-nav nav ml-auto" style="gap: 0.5rem;">
+									<li class="nav-item"><a href="#home-section" class="nav-link" style="color: #ffffff !important; font-weight: 500; transition: color 0.3s;"><span>Home</span></a></li>
+									<li class="nav-item"><a href="about.html" class="nav-link" style="color: #ffffff !important; font-weight: 500; transition: color 0.3s;"><span>About</span></a></li>
+
+									<li class="nav-item"><a href="services.html" class="nav-link" style="color: #ffffff !important; font-weight: 500; transition: color 0.3s;"><span>Services</span></a></li>
+									<li class="nav-item"><a href="skills.html" class="nav-link" style="color: #ffffff !important; font-weight: 500; transition: color 0.3s;"><span>Skills</span></a></li>
+									<li class="nav-item"><a href="projects.html" class="nav-link" style="color: #ffffff !important; font-weight: 500; transition: color 0.3s;"><span>Projects</span></a></li>
+									<li class="nav-item"><a href="gallery.html" class="nav-link" style="color: #ffffff !important; font-weight: 500; transition: color 0.3s;"><span>Gallery</span></a></li>
+									<li class="nav-item"><a href="blog.html" class="nav-link" style="color: #ffffff !important; font-weight: 500; transition: color 0.3s;"><span>My Blog</span></a></li>
+									<li class="nav-item"><a href="contact.html" class="nav-link" style="color: #ffffff !important; font-weight: 500; transition: color 0.3s;"><span>Contact</span></a></li>
+									<li class="nav-item"><a href="index-tr.html" class="nav-link" style="color: #d4af37 !important; font-weight: 500; transition: color 0.3s;" title="Turkish"><span>TR</span></a></li>
+								</ul>
+							</div>
+	    </div>
+	  </nav>
+	  <section id="home-section" class="hero">
+		  <div class="home-slider  owl-carousel">
+	      <div class="slider-item ">
+	      	<div class="overlay"></div>
+	        <div class="container">
+	          <div class="row d-md-flex no-gutters slider-text align-items-center justify-content-between" data-scrollax-parent="true">
+              <div class="one-forth d-flex align-items-center ftco-animate" data-scrollax=" properties: { translateY: '70%' }">
+                <div class="typewriter-block">
+                  <span class="typewriter-name">I am Hanifi Gönültaş</span>
+                  <br>
+                  <span id="typewriter-text"></span>
+                </div>
+              </div>
+              <div class="one-third d-flex align-items-center justify-content-end" style="padding-right: -120px;">
+                <img src="image/homepp.png" alt="Hanifi Gönültaş" style="width: 440px; height: 480px; object-fit: cover; object-position: center top; border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);">
+              </div>
+            <!-- Removed extra sections (About, Resume, Services, Skills, Projects, Blog, Counters, Hire Me, Contact) to keep index focused on Home. -->
+              <script>
+                // Typewriter effect for hero section
+                const typewriterTexts = [
+                  "Frontend Developer",
+                  "Focused on UI/UX Design",
+                  "Building with HTML, CSS, and JavaScript",
+                  "Learning React and TypeScript",
+                  "Creating User-Centered Interfaces",
+                  "Building Responsive Web Experiences",
+                  "Developing Modern and Functional Websites",
+                  "Improving My Python and SQL Skills",
+                  "Combining Design with Technology"
+                ];
+                let twIndex = 0, charIndex = 0, isDeleting = false;
+                const twElement = document.getElementById('typewriter-text');
+                function typeWriter() {
+                  if (!twElement) return;
+                  const current = typewriterTexts[twIndex];
+                  if (isDeleting) {
+                    twElement.textContent = current.substring(0, charIndex--);
+                    if (charIndex < 0) {
+                      isDeleting = false;
+                      twIndex = (twIndex + 1) % typewriterTexts.length;
+                      setTimeout(typeWriter, 700);
+                    } else {
+                      setTimeout(typeWriter, 40);
+                    }
+                  } else {
+                    twElement.textContent = current.substring(0, charIndex++);
+                    if (charIndex > current.length) {
+                      isDeleting = true;
+                      setTimeout(typeWriter, 1200);
+                    } else {
+                      setTimeout(typeWriter, 80);
+                    }
+                  }
+                }
+                document.addEventListener('DOMContentLoaded', typeWriter);
+              </script>
+              <style>
+                .typewriter-block {
+                  font-size: 2.2rem;
+                  font-weight: 700;
+                  min-height: 90px;
+                  margin-bottom: 1.5rem;
+                  font-family: 'Poppins', Arial, sans-serif;
+                  letter-spacing: 1px;
+                }
+                .typewriter-name {
+                  color: #FFD600;
+                  font-size: 2.5rem;
+                  font-weight: 700;
+                  letter-spacing: 1.5px;
+                  text-shadow: 0 2px 8px rgba(0,0,0,0.12);
+                }
+                #typewriter-text {
+                  color: #fff;
+                  font-size: 2rem;
+                  font-weight: 700;
+                  letter-spacing: 1px;
+                }
+                #typewriter-text::after {
+                  content: '|';
+                  animation: blink 1s infinite;
+                  color: #FFD600;
+                  margin-left: 2px;
+                }
+                @keyframes blink {
+                  0%, 100% { opacity: 1; }
+                  50% { opacity: 0; }
+                }
+              </style>
+              <script>
+                // Add the third background layer for smooth crossfade
+                document.addEventListener('DOMContentLoaded', function() {
+                  if (document.body.classList.contains('page-home')) {
+                    var bg3 = document.createElement('div');
+                    bg3.className = 'home-bg-3';
+                    document.body.appendChild(bg3);
+                  }
+                });
+              </script>
+          </div>
+        </div>
+
+        <div class="row no-gutters block-9">
+          <div class="col-md-6 order-md-last d-flex">
+            <form id="contactForm" class="bg-light p-4 p-md-5 contact-form">
+              <div class="form-group">
+                <input type="text" name="name" class="form-control" placeholder="Your Name" required>
+              </div>
+              <div class="form-group">
+                <input type="email" name="email" class="form-control" placeholder="Your Email" required>
+              </div>
+              <div class="form-group">
+                <input type="text" name="subject" class="form-control" placeholder="Subject" required>
+              </div>
+              <div class="form-group">
+                <textarea name="message" cols="30" rows="7" class="form-control" placeholder="Message" required></textarea>
+              </div>
+              <div class="form-group">
+                <input type="submit" value="Send Message" class="btn btn-primary py-3 px-5">
+              </div>
+            </form>
+          
+          </div>
+
+          <div class="col-md-6 d-flex">
+          	<div class="img" style="background-image: url(about.jpg);"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+		
+
+    <footer class="ftco-footer ftco-section">
+      <div class="container">
+        <div class="row mb-5">
+          <div class="col-md">
+            <div class="ftco-footer-widget mb-4">
+              <h2 class="ftco-heading-2">About</h2>
+              <p style="margin-bottom:2.2em;">"The best websites aren't the prettiest — they're the most usable."</p>
+              <div style="text-align:right; margin-bottom:1.2em; font-size:1.08em; color:#000000; font-weight:600; letter-spacing:0.5px;">
+                <strong>— Unkown</strong>
+              </div>
+              <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-5">
+                <li class="ftco-animate"><a href="https://github.com/hanifigonultas" target="_blank" style="color:#23243a;"><span class="icon ion-logo-github"></span></a></li>
+                <li class="ftco-animate"><a href="https://linkedin.com/in/hanifigonultas" target="_blank" style="color:#0077b5;"><span class="icon ion-logo-linkedin"></span></a></li>
+                <li class="ftco-animate"><a href="https://instagram.com/hanifigonultass" target="_blank" style="color:#e1306c;"><span class="icon ion-logo-instagram"></span></a></li>
+                <li class="ftco-animate"><a href="https://mail.google.com/mail/?view=cm&to=gonultashanifi5@gmail.com" target="_blank" style="color:#d44638;"><span class="icon ion-logo-google"></span></a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md">
+            <div class="ftco-footer-widget mb-4 ml-md-4">
+              <h2 class="ftco-heading-2">Links</h2>
+							<ul class="list-unstyled">
+						    <li><a href="index.html"><span class="icon-long-arrow-right mr-2"></span>Home</a></li>
+                <li><a href="about.html"><span class="icon-long-arrow-right mr-2"></span>About</a></li>
+                <li><a href="services.html"><span class="icon-long-arrow-right mr-2"></span>Services</a></li>
+                <li><a href="projects.html"><span class="icon-long-arrow-right mr-2"></span>Projects</a></li>
+                <li><a href="gallery.html"><span class="icon-long-arrow-right mr-2"></span>Gallery</a></li>
+                <li><a href="contact.html"><span class="icon-long-arrow-right mr-2"></span>Contact</a></li>
+                <li><a href="blog.html"><span class="icon-long-arrow-right mr-2"></span>My Blog</a></li>
+                <li><a href="skills.html"><span class="icon-long-arrow-right mr-2"></span>Skills</a></li>
+							</ul>
+            </div>
+          </div>
+          <div class="col-md">
+             <div class="ftco-footer-widget mb-4">
+              <h2 class="ftco-heading-2">Services</h2>
+              <ul class="list-unstyled">
+                <li><a href="services.html"><span class="icon-long-arrow-right mr-2"></span>Web Design</a></li>
+                <li><a href="services.html"><span class="icon-long-arrow-right mr-2"></span>Web Development</a></li>
+                <li><a href="services.html"><span class="icon-long-arrow-right mr-2"></span>Business Strategy</a></li>
+                <li><a href="services.html"><span class="icon-long-arrow-right mr-2"></span>Data Analysis</a></li>
+                <li><a href="services.html"><span class="icon-long-arrow-right mr-2"></span>Graphic Design</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md">
+            <div class="ftco-footer-widget mb-4">
+            	<h2 class="ftco-heading-2">Have a Questions?</h2>
+            	<div class="block-23 mb-3">
+	              <ul>
+	                <li><a href="mailto:gonultashanifi5@gmail.com"><span class="icon icon-envelope"></span><span class="text">gonultashanifi5@gmail.com</span></a></li>
+                  <li><a href="https://www.linkedin.com/in/hanifi-gönültaş-59680937b/" target="_blank"><span class="icon icon-linkedin"></span><span class="text">LinkedIn</span></a></li>
+                  <li><span class="icon icon-map-marker"></span><span class="text"> Kültür, 3802. Sk. no:29, 07090 Kepez/Antalya</span></li>
+	              </ul>
+	            </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12 text-center">
+
+            <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+    Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | Design and Development: <strong>Hanifi Gönültaş</strong> <i class="icon-heart color-danger" aria-hidden="true"></i>
+  <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>
+          </div>
+        </div>
+      </div>
+    </footer>
+    
+  
+
+  <!-- loader -->
+
+
+  <script src="js/jquery.min.js"></script>
+  <script src="js/jquery-migrate-3.0.1.min.js"></script>
+  <script src="js/popper.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/jquery.easing.1.3.js"></script>
+  <script src="js/jquery.waypoints.min.js"></script>
+  <script src="js/jquery.stellar.min.js"></script>
+  <script src="js/owl.carousel.min.js"></script>
+  <script src="js/jquery.magnific-popup.min.js"></script>
+  <script src="js/aos.js"></script>
+  <script src="js/jquery.animateNumber.min.js"></script>
+  <script src="js/scrollax.min.js"></script>
+  
+  <script src="js/main.js"></script>
+
+  <!-- EmailJS -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/index.min.js"></script>
+  <script type="text/javascript">
+    emailjs.init('YrqdpnicPcE53vAq6');
+    
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const serviceID = 'service_yocqj6y';
+      const templateID = 'template_86e39ni';
+      
+      emailjs.sendForm(serviceID, templateID, this)
+        .then(() => {
+          alert('Message sent successfully!');
+          document.getElementById('contactForm').reset();
+        })
+        .catch((err) => {
+          alert('Failed to send message: ' + JSON.stringify(err));
+        });
+    });
+  </script>
+    
+    <!-- Content changes appear only after an explicit CMS publication. -->
+  <script src="cms-config.js" defer></script>
+  <script src="js/cms-content.js" defer></script>
+</body>
+</html>
+
