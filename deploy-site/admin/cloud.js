@@ -1,8 +1,10 @@
-/* Supabase Auth + PostgREST transport. Sessions are deliberately memory-only. */
+/* Supabase Auth + PostgREST transport. Reload-safe, tab-scoped sessions. */
 (function (root) {
   'use strict';
   const TIMEOUT_MS = 15000;
   let config = null, session = null, refreshing = null, generation = 0;
+  const sessionKey=()=>config?'hanifi-cms-session:'+config.supabaseUrl+':'+config.siteId:null;
+  function persistSession(){try{const key=sessionKey();if(key){if(session)root.sessionStorage?.setItem(key,JSON.stringify(session));else root.sessionStorage?.removeItem(key);}}catch{}}
   function fail(code, message, status) { const e = new Error(message); e.code = code; if (status) e.status = status; return e; }
   function configured() { if (!config) throw fail('NOT_CONFIGURED', 'Önce Supabase proje adresini ve publishable anahtarını ayarla.'); }
   function userCopy() { return session ? {id: session.user.id, email: session.user.email || ''} : null; }
@@ -63,6 +65,7 @@
     session = {accessToken: value.access_token, refreshToken: value.refresh_token,
       expiresAt: Date.now() + (Number.isFinite(seconds) && seconds > 0 ? seconds : 3600) * 1000,
       user: {id: value.user.id, email: value.user.email || ''}};
+    persistSession();
   }
   async function refresh() {
     if (refreshing) return refreshing;
@@ -70,7 +73,7 @@
     const epoch = generation, token = session.refreshToken;
     const operation = (async () => {
       try { acceptSession(await request('/auth/v1/token?grant_type=refresh_token', {method: 'POST', body: {refresh_token: token}, auth: true}), epoch); }
-      catch (error) { if (epoch === generation && error.code === 'AUTH_REQUIRED') session = null; throw error; }
+      catch (error) { if (epoch === generation && error.code === 'AUTH_REQUIRED') {session = null;persistSession();} throw error; }
     })();
     refreshing = operation;
     try { await operation; } finally { if (refreshing === operation) refreshing = null; }
@@ -115,17 +118,30 @@
     isConfigured: () => !!config,
     isSignedIn: () => !!session,
     getUser: userCopy,
+    async restoreSession() {
+      configured();
+      let saved;
+      try{saved=JSON.parse(root.sessionStorage?.getItem(sessionKey())||'null');}catch{return false;}
+      if(!saved)return false;
+      if(typeof saved.refreshToken!=='string'||!saved.refreshToken||typeof saved.accessToken!=='string'||!saved.user||typeof saved.user.id!=='string'){persistSession();return false;}
+      session=saved;
+      // Never trust stored identity or admin flags; validate with Auth, then the admin RPC.
+      await refresh();
+      return true;
+    },
     async signIn(email, password) {
       configured();
       if (typeof email !== 'string' || !email.trim() || typeof password !== 'string' || !password) throw fail('VALIDATION', 'E-posta ve parola gerekli.');
       const epoch = ++generation;
       session = null; refreshing = null;
+      persistSession();
       acceptSession(await request('/auth/v1/token?grant_type=password', {method: 'POST', body: {email: email.trim(), password}, auth: true}), epoch);
       return userCopy();
     },
     async signOut() {
       const token = session && session.accessToken;
       generation++; session = null; refreshing = null;
+      persistSession();
       if (token && config) {
         try { await request('/auth/v1/logout?scope=local', {method: 'POST', token, auth: true}); }
         catch (error) { if (error.code !== 'AUTH_REQUIRED') throw error; }

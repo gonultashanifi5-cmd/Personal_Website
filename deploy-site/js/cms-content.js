@@ -37,11 +37,11 @@
   }
   function setHome(page,settings){
     if(!page?.updatedAt)return;
-    const parts=lines(local(page.body)),name=$('.typewriter-name'),tw=$('#typewriter-text');
-    if(name)name.textContent=parts.shift()||settings.fullName||'';
+    const parts=lines(local(page.body)),name=parts.shift()||settings.fullName||'';
+    all('.typewriter-name').forEach(node=>{node.textContent=name;});
     // The old timer retains its old DOM reference; it can no longer overwrite CMS text.
-    if(tw){const fresh=tw.cloneNode(false);fresh.textContent=parts.join(' · ');fresh.style.fontSize='1.35rem';fresh.style.lineHeight='1.6';tw.replaceWith(fresh);}
-    setImage($('#home-section img'),page.cover,settings.fullName);
+    all('[id="typewriter-text"]').forEach(tw=>{const fresh=tw.cloneNode(false);fresh.textContent=parts.join(' · ');fresh.style.fontSize='1.35rem';fresh.style.lineHeight='1.6';tw.replaceWith(fresh);});
+    all('#home-section img').forEach(node=>setImage(node,page.cover,settings.fullName));
   }
   function pageDetails(page,settings){
     if(!page?.updatedAt)return;
