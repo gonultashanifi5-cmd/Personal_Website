@@ -17,7 +17,6 @@
     if(!phrases.length){write('');return;}
     let index=0,chars=Array.from(phrases[0]),length=chars.length,deleting=true;
     write(phrases[0]);
-    if(root.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
     function tick(){
       if(deleting){
         length--;write(chars.slice(0,Math.max(0,length)).join(''));

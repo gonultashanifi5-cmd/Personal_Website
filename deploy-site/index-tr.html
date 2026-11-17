@@ -67,6 +67,9 @@
             <!-- Removed extra sections (About, Resume, Services, Skills, Projects, Blog, Counters, Hire Me, Contact) to keep index focused on Home. -->
               <script>
                 // Typewriter effect for hero section
+                (function () {
+                if (window.HANIFI_TYPEWRITER_STARTED) return;
+                window.HANIFI_TYPEWRITER_STARTED = true;
                 const typewriterTexts = [
                   "Frontend Geliştirici",
                   "UI/UX Tasarımına Odaklanıyorum",
@@ -81,7 +84,7 @@
                 let twIndex = 0, charIndex = 0, isDeleting = false;
                 const twElement = document.getElementById('typewriter-text');
                 function typeWriter() {
-                  if (!twElement) return;
+                  if (!twElement || !twElement.isConnected) return;
                   const current = typewriterTexts[twIndex];
                   if (isDeleting) {
                     twElement.textContent = current.substring(0, charIndex--);
@@ -103,6 +106,7 @@
                   }
                 }
                 document.addEventListener('DOMContentLoaded', typeWriter);
+                })();
               </script>
               <style>
                 .typewriter-block {
@@ -140,7 +144,7 @@
               <script>
                 // Add the third background layer for smooth crossfade
                 document.addEventListener('DOMContentLoaded', function() {
-                  if (document.body.classList.contains('page-home')) {
+                  if (document.body.classList.contains('page-home') && !document.querySelector('.home-bg-3')) {
                     var bg3 = document.createElement('div');
                     bg3.className = 'home-bg-3';
                     document.body.appendChild(bg3);
@@ -293,7 +297,7 @@
     
     <!-- Content changes appear only after an explicit CMS publication. -->
   <script src="cms-config.js" defer></script>
-  <script src="js/cms-content.js" defer></script>
+<script src="js/cms-content.js?v=2.0.4" defer></script>
 </body>
 </html>
 
