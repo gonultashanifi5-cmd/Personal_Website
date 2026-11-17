@@ -48,136 +48,18 @@
 							</div>
 	    </div>
 	  </nav>
-	  <section id="home-section" class="hero">
-		  <div class="home-slider  owl-carousel">
-	      <div class="slider-item ">
-	      	<div class="overlay"></div>
-	        <div class="container">
-	          <div class="row d-md-flex no-gutters slider-text align-items-center justify-content-between" data-scrollax-parent="true">
-              <div class="one-forth d-flex align-items-center ftco-animate" data-scrollax=" properties: { translateY: '70%' }">
-                <div class="typewriter-block">
-                  <span class="typewriter-name">I am Hanifi Gönültaş</span>
-                  <br>
-                  <span id="typewriter-text"></span>
-                </div>
-              </div>
-              <div class="one-third d-flex align-items-center justify-content-end" style="padding-right: -120px;">
-                <img src="image/homepp.png" alt="Hanifi Gönültaş" style="width: 440px; height: 480px; object-fit: cover; object-position: center top; border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);">
-              </div>
-            <!-- Removed extra sections (About, Resume, Services, Skills, Projects, Blog, Counters, Hire Me, Contact) to keep index focused on Home. -->
-              <script>
-                // Typewriter effect for hero section
-                (function () {
-                if (window.HANIFI_TYPEWRITER_STARTED) return;
-                window.HANIFI_TYPEWRITER_STARTED = true;
-                const typewriterTexts = [
-                  "Frontend Developer",
-                  "Focused on UI/UX Design",
-                  "Building with HTML, CSS, and JavaScript",
-                  "Learning React and TypeScript",
-                  "Creating User-Centered Interfaces",
-                  "Building Responsive Web Experiences",
-                  "Developing Modern and Functional Websites",
-                  "Improving My Python and SQL Skills",
-                  "Combining Design with Technology"
-                ];
-                let twIndex = 0, charIndex = 0, isDeleting = false;
-                const twElement = document.getElementById('typewriter-text');
-                function typeWriter() {
-                  if (!twElement || !twElement.isConnected) return;
-                  const current = typewriterTexts[twIndex];
-                  if (isDeleting) {
-                    twElement.textContent = current.substring(0, charIndex--);
-                    if (charIndex < 0) {
-                      isDeleting = false;
-                      twIndex = (twIndex + 1) % typewriterTexts.length;
-                      setTimeout(typeWriter, 700);
-                    } else {
-                      setTimeout(typeWriter, 40);
-                    }
-                  } else {
-                    twElement.textContent = current.substring(0, charIndex++);
-                    if (charIndex > current.length) {
-                      isDeleting = true;
-                      setTimeout(typeWriter, 1200);
-                    } else {
-                      setTimeout(typeWriter, 80);
-                    }
-                  }
-                }
-                document.addEventListener('DOMContentLoaded', typeWriter);
-                })();
-              </script>
-              <style>
-                .typewriter-block {
-                  font-size: 2.2rem;
-                  font-weight: 700;
-                  min-height: 90px;
-                  margin-bottom: 1.5rem;
-                  font-family: 'Poppins', Arial, sans-serif;
-                  letter-spacing: 1px;
-                }
-                .typewriter-name {
-                  color: #FFD600;
-                  font-size: 2.5rem;
-                  font-weight: 700;
-                  letter-spacing: 1.5px;
-                  text-shadow: 0 2px 8px rgba(0,0,0,0.12);
-                }
-                #typewriter-text {
-                  color: #fff;
-                  font-size: 2rem;
-                  font-weight: 700;
-                  letter-spacing: 1px;
-                }
-                #typewriter-text::after {
-                  content: '|';
-                  animation: blink 1s infinite;
-                  color: #FFD600;
-                  margin-left: 2px;
-                }
-                @keyframes blink {
-                  0%, 100% { opacity: 1; }
-                  50% { opacity: 0; }
-                }
-              </style>
-              <script>
-                // Add the third background layer for smooth crossfade
-                document.addEventListener('DOMContentLoaded', function() {
-                  if (document.body.classList.contains('page-home') && !document.querySelector('.home-bg-3')) {
-                    var bg3 = document.createElement('div');
-                    bg3.className = 'home-bg-3';
-                    document.body.appendChild(bg3);
-                  }
-                });
-              </script>
+	  <section id="home-section" class="hero cms-home hanifi-home" data-hero-phrases="[&quot;Frontend Developer&quot;,&quot;Focused on UI/UX Design&quot;,&quot;Building with HTML, CSS, and JavaScript&quot;,&quot;Learning React and TypeScript&quot;,&quot;Creating User-Centered Interfaces&quot;,&quot;Building Responsive Web Experiences&quot;,&quot;Developing Modern and Functional Websites&quot;,&quot;Improving My Python and SQL Skills&quot;,&quot;Combining Design with Technology&quot;]">
+      <div class="container">
+        <div class="slider-text align-items-center justify-content-between">
+          <div class="one-forth">
+            <div class="typewriter-block">
+              <span class="typewriter-name">I am Hanifi Gönültaş</span><br>
+              <span id="typewriter-text" aria-hidden="true">Frontend Developer</span>
+              <span class="cms-role-accessible">Frontend Developer. Focused on UI/UX Design. Building with HTML, CSS, and JavaScript. Learning React and TypeScript. Creating User-Centered Interfaces. Building Responsive Web Experiences. Developing Modern and Functional Websites. Improving My Python and SQL Skills. Combining Design with Technology</span>
+            </div>
           </div>
-        </div>
-
-        <div class="row no-gutters block-9">
-          <div class="col-md-6 order-md-last d-flex">
-            <form id="contactForm" class="bg-light p-4 p-md-5 contact-form">
-              <div class="form-group">
-                <input type="text" name="name" class="form-control" placeholder="Your Name" required>
-              </div>
-              <div class="form-group">
-                <input type="email" name="email" class="form-control" placeholder="Your Email" required>
-              </div>
-              <div class="form-group">
-                <input type="text" name="subject" class="form-control" placeholder="Subject" required>
-              </div>
-              <div class="form-group">
-                <textarea name="message" cols="30" rows="7" class="form-control" placeholder="Message" required></textarea>
-              </div>
-              <div class="form-group">
-                <input type="submit" value="Send Message" class="btn btn-primary py-3 px-5">
-              </div>
-            </form>
-          
-          </div>
-
-          <div class="col-md-6 d-flex">
-          	<div class="img" style="background-image: url(about.jpg);"></div>
+          <div class="one-third d-flex align-items-center justify-content-end">
+            <img src="image/homepp.png" alt="Hanifi Gönültaş" width="440" height="480" fetchpriority="high">
           </div>
         </div>
       </div>
@@ -273,31 +155,10 @@
   
   <script src="js/main.js"></script>
 
-  <!-- EmailJS -->
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/index.min.js"></script>
-  <script type="text/javascript">
-    emailjs.init('YrqdpnicPcE53vAq6');
-    
-    document.getElementById('contactForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      const serviceID = 'service_yocqj6y';
-      const templateID = 'template_86e39ni';
-      
-      emailjs.sendForm(serviceID, templateID, this)
-        .then(() => {
-          alert('Message sent successfully!');
-          document.getElementById('contactForm').reset();
-        })
-        .catch((err) => {
-          alert('Failed to send message: ' + JSON.stringify(err));
-        });
-    });
-  </script>
     
     <!-- Content changes appear only after an explicit CMS publication. -->
   <script src="cms-config.js" defer></script>
-<script src="js/cms-content.js?v=2.0.4" defer></script>
+<script src="js/cms-content.js?v=2.1.0" defer></script>
 </body>
 </html>
 

@@ -11,13 +11,16 @@
   const local=(value)=>value&&typeof value==='object'?text(value[language]||value.tr):'';
   const lines=value=>text(value).split(/\n+/).map(x=>x.trim()).filter(Boolean);
   let homeTimer;
+  let homeRun=0;
   function animateHome(phrases){
     clearTimeout(homeTimer);
+    const run=++homeRun;
     const write=value=>all('#home-section [id="typewriter-text"]').forEach(node=>{node.textContent=value;});
     if(!phrases.length){write('');return;}
     let index=0,chars=Array.from(phrases[0]),length=chars.length,deleting=true;
     write(phrases[0]);
     function tick(){
+      if(run!==homeRun)return;
       if(deleting){
         length--;write(chars.slice(0,Math.max(0,length)).join(''));
         if(length<=0){index=(index+1)%phrases.length;chars=Array.from(phrases[index]);length=0;deleting=false;homeTimer=setTimeout(tick,450);return;}
@@ -29,7 +32,6 @@
       }
     }
     homeTimer=setTimeout(tick,1400);
-    root.addEventListener?.('pagehide',()=>clearTimeout(homeTimer),{once:true});
   }
   function url(value,image=false){
     if(typeof value!=='string'||!value||value.length>2048||/[\s<>"\\]/.test(value))return '';
@@ -57,13 +59,14 @@
       payload.media.every(x=>x&&typeof x.id==='string'&&typeof x.src==='string'&&url(x.src,true));
   }
   function setHome(page,settings){
-    if(!page?.updatedAt)return;
+    if(!page)return;
     const parts=lines(local(page.body)),name=parts.shift()||settings.fullName||'';
     $('#home-section')?.classList.add('cms-home');
     all('.typewriter-name').forEach(node=>{node.textContent=name;});
     // The old timer retains its old DOM reference; it can no longer overwrite CMS text.
     all('[id="typewriter-text"]').forEach(tw=>{const fresh=tw.cloneNode(false);fresh.removeAttribute('style');tw.replaceWith(fresh);});
     animateHome(parts);
+    const accessible=$('.cms-role-accessible');if(accessible)accessible.textContent=parts.join('. ');
     all('#home-section img').forEach(node=>setImage(node,page.cover,settings.fullName));
   }
   function pageDetails(page,settings){
@@ -198,12 +201,24 @@
     #home-section.cms-home .slider-text{display:flex!important;flex-wrap:nowrap;gap:32px;height:auto!important;min-height:700px;padding:64px 0}
     #home-section.cms-home .slider-text .one-forth{position:relative!important;inset:auto!important;flex:1 1 52%;width:52%;min-width:0;margin:0;padding:0;transform:none!important;z-index:1}
     #home-section.cms-home .typewriter-block{width:100%;min-width:0;min-height:190px;margin:0;overflow-wrap:anywhere}
+    #home-section.hanifi-home{height:auto;min-height:0;position:relative;overflow:hidden}
+    #home-section.cms-home .typewriter-name{color:#ffd600;font-weight:700;letter-spacing:1px}
+    #home-section.cms-home [id="typewriter-text"]{color:#fff;font-weight:700}
+    #home-section.cms-home [id="typewriter-text"]::after{content:'|';color:#ffd600;margin-left:3px;animation:cms-caret 1s step-end infinite}
+    @keyframes cms-caret{50%{opacity:0}}
+    .cms-role-accessible{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
     #home-section.cms-home .typewriter-name{font-size:clamp(1.7rem,3vw,2.5rem);line-height:1.3}
     #home-section.cms-home [id="typewriter-text"]{display:inline;font-size:clamp(1.15rem,2vw,2rem);line-height:1.5;white-space:normal;overflow-wrap:anywhere}
     #home-section.cms-home .slider-text .one-third{position:relative!important;inset:auto!important;flex:0 1 44%;width:44%;min-width:0;min-height:0!important;margin:0;padding:0!important;z-index:0}
-    #home-section.cms-home .one-third img{width:100%!important;max-width:440px;height:auto!important;aspect-ratio:11/12;object-fit:cover}
+    #home-section.cms-home .one-third img{width:100%!important;max-width:440px;height:auto!important;aspect-ratio:11/12;object-fit:cover;object-position:center top;border-radius:20px;box-shadow:0 8px 32px #0003}
     @media(max-width:767.98px){#home-section.cms-home .slider-text{flex-direction:column;gap:24px;min-height:0;padding:56px 20px}#home-section.cms-home .slider-text .one-forth,#home-section.cms-home .slider-text .one-third{flex:auto;width:100%;justify-content:center!important;text-align:center}#home-section.cms-home .typewriter-block{min-height:150px}#home-section.cms-home .one-third img{max-width:320px}}
     @media(prefers-reduced-motion:reduce){#home-section.cms-home [id="typewriter-text"]::after{animation:none}}
   `;
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+  function boot(){
+    const hero=$('#home-section[data-hero-phrases]');
+    if(hero&&document.body.classList.contains('page-home')&&!$('.home-bg-3'))document.body.appendChild(element('div','home-bg-3'));
+    if(hero){try{const phrases=JSON.parse(hero.dataset.heroPhrases);if(Array.isArray(phrases)&&phrases.every(p=>typeof p==='string'))animateHome(phrases);}catch{}}
+    start();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })(window);
