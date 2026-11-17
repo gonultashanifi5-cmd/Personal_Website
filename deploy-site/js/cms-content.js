@@ -10,6 +10,28 @@
   const text=(value)=>typeof value==='string'?value:'';
   const local=(value)=>value&&typeof value==='object'?text(value[language]||value.tr):'';
   const lines=value=>text(value).split(/\n+/).map(x=>x.trim()).filter(Boolean);
+  let homeTimer;
+  function animateHome(phrases){
+    clearTimeout(homeTimer);
+    const write=value=>all('#home-section [id="typewriter-text"]').forEach(node=>{node.textContent=value;});
+    if(!phrases.length){write('');return;}
+    let index=0,chars=Array.from(phrases[0]),length=chars.length,deleting=true;
+    write(phrases[0]);
+    if(root.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return;
+    function tick(){
+      if(deleting){
+        length--;write(chars.slice(0,Math.max(0,length)).join(''));
+        if(length<=0){index=(index+1)%phrases.length;chars=Array.from(phrases[index]);length=0;deleting=false;homeTimer=setTimeout(tick,450);return;}
+        homeTimer=setTimeout(tick,40);
+      }else{
+        length++;write(chars.slice(0,length).join(''));
+        if(length>=chars.length){deleting=true;homeTimer=setTimeout(tick,1400);return;}
+        homeTimer=setTimeout(tick,80);
+      }
+    }
+    homeTimer=setTimeout(tick,1400);
+    root.addEventListener?.('pagehide',()=>clearTimeout(homeTimer),{once:true});
+  }
   function url(value,image=false){
     if(typeof value!=='string'||!value||value.length>2048||/[\s<>"\\]/.test(value))return '';
     if(/^assets\/[A-Za-z0-9_.-]+$/.test(value))value='image/'+value.slice(7);
@@ -38,9 +60,11 @@
   function setHome(page,settings){
     if(!page?.updatedAt)return;
     const parts=lines(local(page.body)),name=parts.shift()||settings.fullName||'';
+    $('#home-section')?.classList.add('cms-home');
     all('.typewriter-name').forEach(node=>{node.textContent=name;});
     // The old timer retains its old DOM reference; it can no longer overwrite CMS text.
-    all('[id="typewriter-text"]').forEach(tw=>{const fresh=tw.cloneNode(false);fresh.textContent=parts.join(' · ');fresh.style.fontSize='1.35rem';fresh.style.lineHeight='1.6';tw.replaceWith(fresh);});
+    all('[id="typewriter-text"]').forEach(tw=>{const fresh=tw.cloneNode(false);fresh.removeAttribute('style');tw.replaceWith(fresh);});
+    animateHome(parts);
     all('#home-section img').forEach(node=>setImage(node,page.cover,settings.fullName));
   }
   function pageDetails(page,settings){
@@ -171,5 +195,16 @@
   const style=element('style','');
   style.textContent='.cms-article-details{margin-top:1rem;color:inherit}.cms-article-details summary{cursor:pointer;color:#b08b22;font-weight:600}.cms-article-body{white-space:pre-line;line-height:1.8;margin:1rem 0;overflow-wrap:anywhere}.blog-entry .cms-article-details a{color:#b08b22}';
   document.head.appendChild(style);
+  style.textContent+=`
+    #home-section.cms-home .slider-text{display:flex!important;flex-wrap:nowrap;gap:32px;height:auto!important;min-height:700px;padding:64px 0}
+    #home-section.cms-home .slider-text .one-forth{position:relative!important;inset:auto!important;flex:1 1 52%;width:52%;min-width:0;margin:0;padding:0;transform:none!important;z-index:1}
+    #home-section.cms-home .typewriter-block{width:100%;min-width:0;min-height:190px;margin:0;overflow-wrap:anywhere}
+    #home-section.cms-home .typewriter-name{font-size:clamp(1.7rem,3vw,2.5rem);line-height:1.3}
+    #home-section.cms-home [id="typewriter-text"]{display:inline;font-size:clamp(1.15rem,2vw,2rem);line-height:1.5;white-space:normal;overflow-wrap:anywhere}
+    #home-section.cms-home .slider-text .one-third{position:relative!important;inset:auto!important;flex:0 1 44%;width:44%;min-width:0;min-height:0!important;margin:0;padding:0!important;z-index:0}
+    #home-section.cms-home .one-third img{width:100%!important;max-width:440px;height:auto!important;aspect-ratio:11/12;object-fit:cover}
+    @media(max-width:767.98px){#home-section.cms-home .slider-text{flex-direction:column;gap:24px;min-height:0;padding:56px 20px}#home-section.cms-home .slider-text .one-forth,#home-section.cms-home .slider-text .one-third{flex:auto;width:100%;justify-content:center!important;text-align:center}#home-section.cms-home .typewriter-block{min-height:150px}#home-section.cms-home .one-third img{max-width:320px}}
+    @media(prefers-reduced-motion:reduce){#home-section.cms-home [id="typewriter-text"]::after{animation:none}}
+  `;
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })(window);
