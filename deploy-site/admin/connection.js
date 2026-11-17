@@ -6,6 +6,7 @@
   const clone = v=>JSON.parse(JSON.stringify(v));
   let api, config = {...(root.CMS_CONFIG||{}),siteUrl:LIVE}, revision = 0, loaded = false, busy = false, feedback = '', lastPublication = '', adminVerified = false;
   const cloud = ()=>root.CMSCloud;
+  let restoring=false;
   const error = message=>{ feedback=message;api.toast(message);api.render(); };
   function validState(value) {
     return value && value.version===1 && value.settings && typeof value.settings.fullName==='string' &&
@@ -15,6 +16,7 @@
   function configure() { adminVerified=false;if(!cloud())return; cloud().configure(config);revision=0;loaded=false; }
   const canAccess = ()=>adminVerified && !!cloud()?.isSignedIn();
   function loginView() {
+    if(restoring)return '<section class="auth-card" role="status" aria-live="polite" aria-busy="true"><div class="auth-brand">hanifi<span>.</span> <small>STUDIO</small></div><div class="eyebrow">ADMIN PANEL V2</div><h1>Oturum kontrol ediliyor</h1><p>Yönetici yetkin doğrulanıyor…</p></section>';
     const configured=cloud()?.isConfigured();
     return `<section class="auth-card"><div class="auth-brand">hanifi<span>.</span> <small>STUDIO</small></div><div class="eyebrow">ADMIN PANEL V2</div><h1>Yönetici girişi</h1><p>Web siteni yönetmek için hesabınla giriş yap.</p>${feedback?`<div class="connection-message" role="status">${esc(feedback)}</div>`:''}<form id="cloud-login-form"><div class="field"><label for="cloud-email">E-posta</label><input id="cloud-email" name="email" type="email" autocomplete="username" required ${disable(!configured||busy)}></div><div class="field"><label for="cloud-password">Parola</label><input id="cloud-password" name="password" type="password" autocomplete="current-password" required ${disable(!configured||busy)}></div><button class="btn btn-primary" ${disable(!configured||busy)}>${busy?'Giriş doğrulanıyor…':'Giriş yap'}</button></form>${!configured?'<p role="alert">Proje bağlantısı eksik. CMS config.js dosyasındaki Supabase ayarlarını kontrol et.</p>':''}<a class="auth-site-link" href="${LIVE}">← Web sitesine dön</a></section>`;
   }
@@ -129,13 +131,17 @@
           else if(action==='publish')await save(true);
         });
       });
-      if(cloud()?.isConfigured()&&cloud()?.restoreSession)run(async()=>{
-        feedback='Oturum doğrulanıyor…';
-        if(!await cloud().restoreSession()){feedback='';return;}
-        await cloud().loadDraft();
-        adminVerified=true;
-        feedback='Oturumun devam ediyor. Buluta kaydetmeden önce güncel bulut taslağını yükle.';
-      });
+      if(cloud()?.isConfigured()&&cloud()?.restoreSession){
+        restoring=true;
+        run(async()=>{
+          try{
+            if(!await cloud().restoreSession()){feedback='';return;}
+            await cloud().loadDraft();
+            adminVerified=true;
+            feedback='Oturumun devam ediyor. Buluta kaydetmeden önce güncel bulut taslağını yükle.';
+          }finally{restoring=false;}
+        });
+      }
     }
   };
 })(window);
