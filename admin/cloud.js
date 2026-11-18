@@ -155,6 +155,18 @@
       configured(); validRevision(expectedRevision);
       return draftResult(await authorized('/rest/v1/rpc/cms_save_draft', {method: 'POST', body: {p_site_id: config.siteId, p_payload: payload, p_expected_revision: expectedRevision}}));
     },
+    async listHistory(before=null) {
+      configured();
+      return authorized('/rest/v1/rpc/cms_list_history',{method:'POST',body:{p_site_id:config.siteId,p_before:before}});
+    },
+    async getHistory(id) {
+      configured();validRevision(Number(id));
+      return authorized('/rest/v1/rpc/cms_get_history',{method:'POST',body:{p_site_id:config.siteId,p_id:Number(id)}});
+    },
+    async listTrash() {
+      configured();
+      return authorized('/rest/v1/rpc/cms_list_trash',{method:'POST',body:{p_site_id:config.siteId}});
+    },
     async publish(expectedRevision) {
       configured(); validRevision(expectedRevision);
       const value = await authorized('/rest/v1/rpc/cms_publish', {method: 'POST', body: {p_site_id: config.siteId, p_expected_revision: expectedRevision}});

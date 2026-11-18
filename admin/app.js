@@ -25,7 +25,7 @@
   const icon = (name, extra = '') => `<svg ${extra} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${paths[name] || paths.file}"/></svg>`;
   const routes = [
     ['overview','Genel bakış','grid'],['pages','Sayfalar','file'],['projects','Projeler','folder'],
-    ['posts','Blog yazıları','pen'],['media','Medya kütüphanesi','image'],['settings','Site ayarları','settings'],['connection','Bağlantı ve yayın','globe']
+    ['posts','Blog yazıları','pen'],['media','Medya kütüphanesi','image'],['history','Geçmiş ve çöp kutusu','clock'],['settings','Site ayarları','settings'],['connection','Bağlantı ve yayın','globe']
   ];
   let state = clone(window.CMS_SEED);
   let storageError = '';
@@ -59,6 +59,12 @@
   }
   function commit(next, message) {
     if(!window.CMSIntegration?.canAccess())return false;
+    if(JSON.stringify(next)!==JSON.stringify(state)){
+      const recent=next.activity?.[0],previous=state.activity?.[0];
+      const label=message==='Geri yükleme öncesi taslak'?message:recent&&recent.id!==previous?.id?`${recent.label} · önceki taslak`:'Taslağı değiştirmeden önce';
+      try{window.CMSHistory?.capture(state,label);}
+      catch{toast('Geri alma yedeği oluşturulamadı. Önce JSON yedeği indirip tarayıcıda yer aç. Değişiklik kaydedilmedi.');return false;}
+    }
     try { localStorage.setItem(KEY,JSON.stringify(next)); }
     catch { toast('Kaydedilemedi: tarayıcı depolaması dolu veya kapalı. Medyayı küçültmeyi ya da JSON yedeği almayı dene.'); return false; }
     state = next; storageError = ''; render(); if (message) toast(message); return true;
@@ -136,7 +142,7 @@
       const term = query.toLocaleLowerCase('tr-TR');
       const results = records().filter(i=>(i.title.tr+' '+i.title.en+' '+i.body.tr+' '+i.body.en).toLocaleLowerCase('tr-TR').includes(term));
       content = heading('İÇERİK ARAMA',`“${esc(query)}” için sonuçlar`,`${results.length} içerik bulundu. Türkçe ve İngilizce içerikler birlikte aranır.`)+`<section class="panel">${table(results,true)}</section>`;
-    } else content = route==='overview'?dashboard():['pages','projects','posts'].includes(route)?collection(route):route==='media'?mediaPage():route==='connection'?window.CMSIntegration.view():settingsPage();
+    } else content = route==='overview'?dashboard():['pages','projects','posts'].includes(route)?collection(route):route==='media'?mediaPage():route==='history'?window.CMSHistory.view():route==='connection'?window.CMSIntegration.view():settingsPage();
     main.innerHTML = (storageError?`<div class="error-banner" role="alert">${esc(storageError)}</div>`:'')+content;
   }
   function navigate() {
@@ -210,9 +216,9 @@
     else if(action==='export')exportData();
     else if(action==='upload')$('#media-upload').click();
     else if(action==='delete-entry'){
-      if(!await confirmAction('İçeriği kaldır','Bu içerik yerel taslaktan kaldırılacak. Kaynak site değişmeyecek.','İçeriği sil'))return;
+      if(!await confirmAction('Çöp kutusuna taşı','İçerik taslaktan kaldırılacak. Geçmiş ve çöp kutusu bölümünden geri getirebilirsin. Canlı site yayınlayana kadar değişmez.','Çöp kutusuna taşı'))return;
       const next=clone(state);next[draftGroup]=next[draftGroup].filter(i=>i.id!==draft.id);activity(next,`${draft.title.tr} kaldırıldı`);
-      if(commit(next,'İçerik yerel taslaktan kaldırıldı.')){editor.close();draft=null;dirty=false;}
+      if(commit(next,'İçerik çöp kutusuna taşındı.')){editor.close();draft=null;dirty=false;}
     }else if(action==='media-preview'){
       const m=state.media.find(i=>i.id===id);openPreview({id:m.id,type:'media',title:{tr:m.alt||m.name,en:m.alt||m.name},body:{tr:m.name,en:m.name},cover:m.src});
     }else if(action==='delete-media'){
@@ -263,6 +269,7 @@
   window.addEventListener('beforeunload',event=>{if(dirty){event.preventDefault();event.returnValue='';}});
   window.addEventListener('hashchange',navigate);
   window.CMSIntegration?.install({ getState: () => clone(state), replaceState: next => commit(clone(next)), toast, render, confirm: confirmAction });
+  window.CMSHistory?.install({getState:()=>clone(state),replaceState:next=>commit(clone(next),'Geri yükleme öncesi taslak'),toast,render,confirm:confirmAction});
   navigate();
 })();
 

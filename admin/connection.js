@@ -89,6 +89,7 @@
   root.CMSIntegration={
     view:connectionView,
     loginView, canAccess,
+    isDraftLoaded:()=>loaded&&canAccess(),
     install(workspace){
       api=workspace;
       try{
