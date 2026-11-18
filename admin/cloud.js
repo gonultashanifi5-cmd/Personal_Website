@@ -37,7 +37,7 @@
     configured();
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
-    const headers = {'apikey': config.publishableKey, 'Accept': 'application/json'};
+    const headers = {'apikey': config.publishableKey, 'Accept': options.binary?'*/*':'application/json'};
     if (options.body !== undefined) headers['Content-Type'] = options.raw ? options.contentType : 'application/json';
     if (options.token) headers.Authorization = 'Bearer ' + options.token;
     try {
@@ -46,6 +46,7 @@
         credentials: 'omit', cache: 'no-store', redirect: 'error',
         body: options.body === undefined ? undefined : options.raw ? options.body : JSON.stringify(options.body)
       });
+      if(response.ok&&options.binary)return response.blob();
       const raw = await response.text();
       let body = null;
       try { body = raw ? JSON.parse(raw) : null; } catch (_) { /* Never reflect server HTML or secrets. */ }
@@ -158,6 +159,33 @@
     async listHistory(before=null) {
       configured();
       return authorized('/rest/v1/rpc/cms_list_history',{method:'POST',body:{p_site_id:config.siteId,p_before:before}});
+    },
+    async loadPublication(){
+      configured();const rows=await request('/rest/v1/cms_publications?site_id=eq.'+encodeURIComponent(config.siteId)+'&select=payload,revision,published_at&limit=1');
+      return rows?.[0]||null;
+    },
+    async validateDraft(payload){configured();return authorized('/rest/v1/rpc/cms_validate_draft',{method:'POST',body:{p_payload:payload}});},
+    async listFileBackups(){configured();return authorized('/rest/v1/rpc/cms_list_file_backups',{method:'POST',body:{p_site_id:config.siteId}});},
+    async registerFileBackup(id,count,failed){configured();return authorized('/rest/v1/rpc/cms_register_file_backup',{method:'POST',body:{p_site_id:config.siteId,p_id:id,p_count:count,p_failed:failed}});},
+    async putBackupFile(id,name,blob){
+      if(!session)throw fail('AUTH_REQUIRED','Önce giriş yap.');
+      if(!/^[0-9a-f-]{36}$/.test(id)||! /^(?:manifest\.json|[0-9a-f]{64}\.(?:png|jpg|webp))$/.test(name)||blob.size>20971520)throw fail('VALIDATION','Yedek dosyası geçersiz veya 20 MB sınırını aşıyor.');
+      const path=session.user.id+'/'+id+'/'+name;
+      await authorized('/storage/v1/object/cms-backups/'+path,{method:'POST',body:blob,raw:true,contentType:blob.type||'application/octet-stream'});
+      return path;
+    },
+    async getBackupFile(path){
+      if(!session||!new RegExp('^'+session.user.id+'/[0-9a-f-]{36}/(?:manifest\\.json|[0-9a-f]{64}\\.(?:png|jpg|webp))$').test(path))throw fail('VALIDATION','Yedek dosyası yolu geçersiz.');
+      return authorized('/storage/v1/object/cms-backups/'+path,{binary:true});
+    },
+    async restoreImage(blob){
+      if(!session)throw fail('AUTH_REQUIRED','Önce giriş yap.');
+      if(blob.size>20971520||!['image/png','image/jpeg','image/webp'].includes(blob.type))throw fail('VALIDATION','Görsel biçimi veya boyutu desteklenmiyor.');
+      const path=session.user.id+'/'+crypto.randomUUID()+'.'+({'image/png':'png','image/jpeg':'jpg','image/webp':'webp'}[blob.type]);
+      const epoch=generation,base=config.supabaseUrl;
+      await authorized('/storage/v1/object/cms-media/'+path,{method:'POST',body:blob,raw:true,contentType:blob.type});
+      if(epoch!==generation)throw fail('AUTH_REQUIRED','Oturum değişti.');
+      return base+'/storage/v1/object/public/cms-media/'+path;
     },
     async getHistory(id) {
       configured();validRevision(Number(id));

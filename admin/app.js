@@ -25,7 +25,7 @@
   const icon = (name, extra = '') => `<svg ${extra} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${paths[name] || paths.file}"/></svg>`;
   const routes = [
     ['overview','Genel bakış','grid'],['pages','Sayfalar','file'],['projects','Projeler','folder'],
-    ['posts','Blog yazıları','pen'],['media','Medya kütüphanesi','image'],['history','Geçmiş ve çöp kutusu','clock'],['settings','Site ayarları','settings'],['connection','Bağlantı ve yayın','globe']
+    ['posts','Blog yazıları','pen'],['media','Medya kütüphanesi','image'],['history','Geçmiş ve çöp kutusu','clock'],['backups','Görsel yedekleri','image'],['settings','Site ayarları','settings'],['connection','Bağlantı ve yayın','globe']
   ];
   let state = clone(window.CMS_SEED);
   let storageError = '';
@@ -111,7 +111,7 @@
   }
   function mediaPage() {
     return heading('MEDYA KÜTÜPHANESİ','Hikâyenin görsel tarafı','Portre, galeri ve içerik kapakların için ortak bir alan.',btn('upload','Görsel yükle','upload','btn-primary'))+
-    `<div class="section-toolbar media-toolbar"><span>${state.media.length} görsel <span class="muted">· JPG, PNG ve WebP</span></span><span class="small-label">YENİ YÜKLEMELER EN FAZLA 1 MB</span></div><div class="media-grid">${state.media.map(m=>`<article class="media-card"><button class="media-open" data-action="media-preview" data-id="${esc(m.id)}" aria-label="${esc(m.alt || m.name)} önizle"><img src="${esc(imgSrc(m.src))}" alt="${esc(m.alt || m.name)}" loading="lazy"></button><div class="media-info"><div><strong>${esc(m.alt || m.name)}</strong><small>${esc(m.name)} · ${Math.round((m.size||0)/1024)} KB</small></div>${m.uploaded?`<button class="icon-button" data-action="delete-media" data-id="${esc(m.id)}" aria-label="${esc(m.name)} kaldır">${icon('trash')}</button>`:icon('image')}</div></article>`).join('')}</div><div class="notice">${icon('image')}<span>Yeni görseller bu tarayıcıya kaydedilir. Kapak olarak seçebilir, yayınlama sırasında Supabase Storage’a aktarabilirsin.</span></div>`;
+    `<div class="section-toolbar media-toolbar"><span>${state.media.length} görsel <span class="muted">· JPG, PNG ve WebP</span></span><span class="small-label">YENİ YÜKLEMELER EN FAZLA 1 MB</span></div><div class="media-grid">${state.media.map(m=>`<article class="media-card"><button class="media-open" data-action="media-preview" data-id="${esc(m.id)}" aria-label="${esc(m.alt || m.name)} önizle"><img src="${esc(imgSrc(m.src))}" alt="${esc(m.alt || m.name)}" loading="lazy"></button><div class="media-info"><div><strong>${esc(m.alt || m.name)}</strong><small>${esc(m.name)} · ${Math.round((m.size||0)/1024)} KB</small></div><button class="btn btn-secondary btn-small" data-action="studio-media-edit" data-id="${esc(m.id)}">Açıklama düzenle</button>${m.uploaded?`<button class="icon-button" data-action="delete-media" data-id="${esc(m.id)}" aria-label="${esc(m.name)} kaldır">${icon('trash')}</button>`:icon('image')}</div></article>`).join('')}</div><div class="notice">${icon('image')}<span>Yeni görseller bu tarayıcıya kaydedilir. Kapak olarak seçebilir, yayınlama sırasında Supabase Storage’a aktarabilirsin.</span></div>`;
   }
   function settingsPage() {
     return heading('SİTE AYARLARI','Küçük detaylar, güçlü bir kimlik','Sitenin kimlik ve iletişim bilgilerini yönet.',btn('export','JSON yedeği indir','download'))+
@@ -128,12 +128,16 @@
     $('.skip-link').hidden=!allowed;
     if(!allowed){
       main.innerHTML='';$('#navigation').innerHTML='';
-      for(const dialog of [editor,preview,confirmDialog]){if(dialog.open)dialog.close();dialog.innerHTML='';}
+      for(const dialog of document.querySelectorAll('dialog')){if(dialog.open)dialog.close();dialog.innerHTML='';}
       draft=null;dirty=false;query='';
       $('#auth-screen').innerHTML=window.CMSIntegration?.loginView()||'<section class="auth-card"><h1>Giriş ekranı yüklenemedi.</h1><p>Sayfayı yenileyerek tekrar dene.</p></section>';
       return;
     }
     $('#auth-screen').innerHTML='';
+    if(window.CMSIntegration.getSaveStatus){
+      let status=$('#content-status');if(!status){status=document.createElement('span');status.id='content-status';status.className='save-status';status.setAttribute('role','status');$('.topbar-actions')?.prepend(status);}
+      const value=window.CMSIntegration.getSaveStatus();status.textContent=value.label;status.dataset.state=value.kind;status.title=value.label;
+    }
     $('#navigation').innerHTML = routes.map(([key,label,ico])=>`<a class="nav-link ${route===key&&!query?'active':''}" href="#${key}" ${route===key&&!query?'aria-current="page"':''}>${icon(ico)}<span>${label}</span>${Array.isArray(state[key])?`<span class="nav-count">${state[key].length}</span>`:''}</a>`).join('');
     $('#sidebar-name').textContent = state.settings.fullName;
     $('#breadcrumb-current').textContent = query ? 'Arama sonuçları' : routes.find(r=>r[0]===route)[1];
@@ -142,7 +146,7 @@
       const term = query.toLocaleLowerCase('tr-TR');
       const results = records().filter(i=>(i.title.tr+' '+i.title.en+' '+i.body.tr+' '+i.body.en).toLocaleLowerCase('tr-TR').includes(term));
       content = heading('İÇERİK ARAMA',`“${esc(query)}” için sonuçlar`,`${results.length} içerik bulundu. Türkçe ve İngilizce içerikler birlikte aranır.`)+`<section class="panel">${table(results,true)}</section>`;
-    } else content = route==='overview'?dashboard():['pages','projects','posts'].includes(route)?collection(route):route==='media'?mediaPage():route==='history'?window.CMSHistory.view():route==='connection'?window.CMSIntegration.view():settingsPage();
+    } else content = route==='overview'?dashboard():['pages','projects','posts'].includes(route)?collection(route):route==='media'?mediaPage():route==='history'?window.CMSHistory.view():route==='backups'?window.CMSAssets.view():route==='connection'?window.CMSIntegration.view():settingsPage();
     main.innerHTML = (storageError?`<div class="error-banner" role="alert">${esc(storageError)}</div>`:'')+content;
   }
   function navigate() {
@@ -165,6 +169,10 @@
     draft.slug=$('#entry-slug',editor).value.trim();
     draft.status=$('#entry-status',editor).value;
     draft.cover=$('#entry-cover',editor).value;
+    if($('#seo-title',editor)){
+      draft.seo=draft.seo||{title:{tr:'',en:''},description:{tr:'',en:''},image:''};
+      draft.seo.title[editorLanguage]=$('#seo-title',editor).value.trim();draft.seo.description[editorLanguage]=$('#seo-description',editor).value.trim();draft.seo.image=$('#seo-image',editor).value;
+    }
     const linkField = $('#entry-link',editor); if (linkField) draft.link = linkField.value.trim();
   }
   function renderEditor() {
@@ -173,6 +181,7 @@
     const bodyHelp=draft.type==='page'?pageHelp[draft.id]:'Düz metin olarak kaydedilir. Paragraflar korunur.';
     const liveFile=(draft.id==='home'?'index':draft.id)+(editorLanguage==='tr'?'-tr':'')+'.html';
     editor.innerHTML=`<form id="editor-form"><div class="dialog-header"><div><div class="eyebrow">${typeLabel(draft.type).toLocaleUpperCase('tr-TR')}</div><h2 id="editor-title">${exists?'İçeriği düzenle':'Yeni içerik oluştur'}</h2></div><button type="button" class="icon-button" data-action="close-editor" aria-label="Düzenleyiciyi kapat">${icon('close')}</button></div><div class="dialog-body"><div class="editor-tabs" aria-label="Düzenleme dili">${[['tr','Türkçe'],['en','English']].map(([code,label])=>`<button type="button" class="tab ${editorLanguage===code?'active':''}" data-action="editor-language" data-lang="${code}" aria-pressed="${editorLanguage===code}">${icon('globe')}${label}</button>`).join('')}</div><div class="field"><label for="entry-title">İçerik başlığı <span>${editorLanguage.toUpperCase()}</span></label><input id="entry-title" maxlength="240" required value="${esc(draft.title[editorLanguage])}" placeholder="${editorLanguage==='tr'?'Başlığını yaz...':'Enter a title...'}" autofocus></div><div class="field"><label for="entry-body">İçerik / açıklama</label><textarea id="entry-body" rows="11" maxlength="30000" placeholder="İçeriğini buraya yaz...">${esc(draft.body[editorLanguage])}</textarea><small>${esc(bodyHelp||'')}</small></div><div class="form-row"><div class="field"><label for="entry-slug">Sayfa yolu / kısa ad</label><input id="entry-slug" maxlength="150" value="${esc(draft.slug)}" placeholder="yeni-icerik"></div><div class="field"><label for="entry-status">Hazırlık durumu</label><select id="entry-status"><option value="draft" ${draft.status!=='ready'?'selected':''}>Taslak</option><option value="ready" ${draft.status==='ready'?'selected':''}>Hazır</option></select></div></div><div class="field"><label for="entry-cover">${draft.type==='page'&&! ['home','about'].includes(draft.id)?'Sayfa üst görseli':'Kapak görseli'}</label><select id="entry-cover"><option value="">Görsel yok</option>${draft.cover&&!state.media.some(m=>m.src===draft.cover)?`<option value="${esc(draft.cover)}" selected>Mevcut kapak</option>`:""}${state.media.map(m=>`<option value="${esc(m.src)}" ${draft.cover===m.src?'selected':''}>${esc(m.alt||m.name)}</option>`).join('')}</select></div>${draft.type!=='page'?`<div class="field"><label for="entry-link">Proje / yazı bağlantısı (isteğe bağlı)</label><input id="entry-link" maxlength="2000" value="${esc(draft.link||'')}" placeholder="https://..."><small>Boşsa sitede içerik ayrıntısı gösterilir.</small></div>`:''}<div class="notice">${icon('globe')}<span>${editorLanguage==='tr'?'Türkçe sayfayı düzenliyorsun. İngilizce sayfa değişmez.':'İngilizce sayfayı düzenliyorsun. Türkçe sayfa değişmez.'} Kaydettikten sonra Buluta kaydet → Yayınla adımlarını tamamla.${draft.type==='page'?` <a href="https://gonultashanifi5-cmd.github.io/Personal_Website/${esc(liveFile)}" target="_blank" rel="noopener noreferrer">Bu dildeki canlı sayfayı aç ↗</a>`:''}</span></div></div><div class="dialog-footer">${exists&&draft.type!=='page'?`<button type="button" class="btn btn-danger btn-small" data-action="delete-entry">${icon('trash')}Sil</button>`:'<span class="small-label">İÇERİK DÜZENLEYİCİ</span>'}<div>${btn('editor-preview','Önizle','eye','btn-secondary','type="button"')}<button class="btn btn-primary" type="submit">${icon('check')}Kaydet</button></div></div></form>`;
+    if(draft.type==='page'&&window.CMSStudio)$('.dialog-body',editor).insertAdjacentHTML('beforeend',window.CMSStudio.seoFields(draft,editorLanguage,state.media));
   }
   async function confirmAction(title,message,acceptLabel='Devam et') {
     confirmDialog.innerHTML=`<div class="dialog-header"><h2 id="confirm-title">${esc(title)}</h2></div><div class="dialog-body"><p>${esc(message)}</p></div><form method="dialog" class="dialog-footer"><button class="btn btn-secondary" value="cancel" autofocus>Vazgeç</button><button class="btn btn-danger" value="confirm">${esc(acceptLabel)}</button></form>`;
@@ -188,6 +197,7 @@
     previewRecord=clone(record);previewLanguage=language;renderPreview();if(!preview.open)preview.showModal();
   }
   function renderPreview() {
+    if(window.CMSStudio&&previewRecord.type!=='media'){preview.innerHTML=window.CMSStudio.previewHTML(previewRecord,state,previewLanguage);return;}
     const item=previewRecord, isHome=item.id==='home', title=item.title[previewLanguage]||item.title.tr, body=item.body[previewLanguage]||item.body.tr;
     preview.innerHTML=`<div class="dialog-header"><div><div class="eyebrow">İÇERİK ÖNİZLEMESİ</div><h2 id="preview-title">${esc(title)}</h2></div><div class="row-actions">${[['tr','TR'],['en','EN']].map(([lang,label])=>`<button class="btn btn-small ${lang===previewLanguage?'btn-primary':'btn-ghost'}" data-action="preview-language" data-lang="${lang}">${label}</button>`).join('')}<button class="icon-button" data-action="close-preview" aria-label="Önizlemeyi kapat">${icon('close')}</button></div></div><div class="preview-content"><div class="preview-site-nav"><strong>${esc(state.settings.siteName)}<span>.</span></strong><span>${esc(state.settings.role)} · ${previewLanguage.toUpperCase()}</span></div><article class="${isHome?'preview-site-hero':'preview-article'}"><div><span class="preview-eyebrow">${isHome?'PORTFOLYO':esc(typeLabel(item.type).toLocaleUpperCase('tr-TR'))}</span><h${isHome?'1':'2'}>${esc(isHome?state.settings.fullName:title)}</h${isHome?'1':'2'}><div class="preview-body">${esc(body).replace(/\n/g,'<br>')}</div></div>${imgSrc(item.cover)?`<img src="${esc(imgSrc(item.cover))}" alt="${esc(title)}">`:''}</article><div class="preview-site-footer">${esc(state.settings.description||'')} ${state.settings.email?`<span>${esc(state.settings.email)}</span>`:''}</div></div><div class="preview-disclaimer">${icon('eye')} İçerik önizlemesi · Canlı görünüm için web siteni aç.</div>`;
   }
@@ -249,6 +259,7 @@
   editor.addEventListener('input',()=>{dirty=true;});
   editor.addEventListener('change',()=>{dirty=true;});
   editor.addEventListener('cancel',event=>{event.preventDefault();closeEditor();});
+  preview.addEventListener('close',()=>{preview.innerHTML='';});
   $('#media-upload').addEventListener('change',async event=>{
     const files=Array.from(event.target.files);event.target.value='';
     for(const file of files){
@@ -270,6 +281,8 @@
   window.addEventListener('hashchange',navigate);
   window.CMSIntegration?.install({ getState: () => clone(state), replaceState: next => commit(clone(next)), toast, render, confirm: confirmAction });
   window.CMSHistory?.install({getState:()=>clone(state),replaceState:next=>commit(clone(next),'Geri yükleme öncesi taslak'),toast,render,confirm:confirmAction});
+  const studioAPI={getState:()=>clone(state),replaceState:next=>commit(clone(next)),toast,render,confirm:confirmAction};
+  window.CMSStudio?.install(studioAPI);window.CMSAssets?.install(studioAPI);
   navigate();
 })();
 

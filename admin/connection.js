@@ -7,13 +7,14 @@
   let api, config = {...(root.CMS_CONFIG||{}),siteUrl:LIVE}, revision = 0, loaded = false, busy = false, feedback = '', lastPublication = '', adminVerified = false;
   const cloud = ()=>root.CMSCloud;
   let restoring=false;
+  let savedFingerprint='',publishedRevision=0;
   const error = message=>{ feedback=message;api.toast(message);api.render(); };
   function validState(value) {
     return value && value.version===1 && value.settings && typeof value.settings.fullName==='string' &&
       ['pages','projects','posts','media','activity'].every(k=>Array.isArray(value[k])) &&
       ['pages','projects','posts'].every(k=>value[k].every(x=>typeof x.id==='string'&&x.title&&typeof x.title.tr==='string'&&x.body&&typeof x.body.tr==='string'));
   }
-  function configure() { adminVerified=false;if(!cloud())return; cloud().configure(config);revision=0;loaded=false; }
+  function configure() { adminVerified=false;if(!cloud())return; cloud().configure(config);revision=0;loaded=false;savedFingerprint='';publishedRevision=0; }
   const canAccess = ()=>adminVerified && !!cloud()?.isSignedIn();
   function loginView() {
     if(restoring)return '<section class="auth-card" role="status" aria-live="polite" aria-busy="true"><div class="auth-brand">hanifi<span>.</span> <small>STUDIO</small></div><div class="eyebrow">ADMIN PANEL V2</div><h1>Oturum kontrol ediliyor</h1><p>Yönetici yetkin doğrulanıyor…</p></section>';
@@ -32,7 +33,7 @@
       <form id="connection-form" class="panel-body"><div class="field"><label for="supabase-url">Project URL</label><input id="supabase-url" name="supabaseUrl" type="url" placeholder="https://proje-kimligi.supabase.co" value="${esc(config.supabaseUrl||'')}" required ${disable(busy)}></div><div class="field"><label for="supabase-key">Publishable API key</label><input id="supabase-key" name="publishableKey" autocomplete="off" spellcheck="false" placeholder="sb_publishable_..." value="${esc(config.publishableKey||'')}" required ${disable(busy)}><small>Project Settings → API Keys içindeki genel anahtar. Secret anahtar kullanılmaz.</small></div><div class="field"><label for="site-address">Bağlı web sitesi</label><input id="site-address" value="${LIVE}" readonly></div><button class="btn btn-primary" type="submit" ${disable(busy)}>Bağlantıyı kaydet</button></form></section>
       <section class="panel"><div class="panel-heading"><div><h2>Yönetici oturumu</h2><p>Supabase Auth içinde oluşturulan yönetici hesabın.</p></div></div><div class="panel-body">${signed?`<div class="signed-in"><span class="avatar">✓</span><div><strong>Oturum açık</strong><p>${esc(user?.email||'Yönetici')}</p></div>${actionButton('logout','Çıkış yap')}</div><p class="muted">Oturum bu sekmede korunur; sayfayı yenilediğinde otomatik doğrulanır.</p>`:`<form id="cloud-login-form"><div class="field"><label for="cloud-email">E-posta</label><input id="cloud-email" name="email" type="email" autocomplete="username" required ${disable(!configured||busy)}></div><div class="field"><label for="cloud-password">Parola</label><input id="cloud-password" name="password" type="password" autocomplete="current-password" required ${disable(!configured||busy)}></div><button class="btn btn-primary" ${disable(!configured||busy)}>Giriş yap</button></form>`}</div></section></div>
       <aside><section class="panel"><div class="panel-heading"><h2>İçerik ve yayın</h2></div><div class="panel-body"><p class="muted">Yerel kayıtlar otomatik yayınlanmaz. “Taslak” içeriklerin önceki yayını korunur; yeni taslaklar yayına alınmaz.</p><div class="publish-actions">${actionButton('load','Buluttaki taslağı yükle',!signed)}${actionButton('save','Taslağı buluta kaydet',!signed||!loaded)}${actionButton('publish','Sitede yayınla',!signed||!loaded,true)}</div><div class="settings-detail"><span>Yayına uygun içerik</span><strong>${ready}</strong></div><div class="settings-detail"><span>Bulut sürümü</span><strong>${loaded?revision:'—'}</strong></div>${lastPublication?`<p class="muted">Son yayın: ${esc(lastPublication)}</p>`:''}<small>Yayınlanan görseller web sitende herkese açık olur.</small></div></section>
-      <section class="panel"><div class="panel-heading"><h2>Yedek ve bağlantı</h2></div><div class="panel-body"><div class="publish-actions"><button class="btn btn-secondary" data-action="export">JSON yedeği indir</button>${actionButton('download-config','Bağlantı dosyasını indir',!configured)}</div></div></section></aside></div>`;
+      <section class="panel"><div class="panel-heading"><h2>Yedek ve bağlantı</h2></div><div class="panel-body"><div class="publish-actions"><button class="btn btn-secondary" data-action="export">JSON yedeği indir</button>${actionButton('download-config','Bağlantı dosyasını indir',!configured)}</div></div></section></aside></div>${root.CMSStudio?.healthHTML()||''}`;
   }
   async function run(task) {
     if(busy)return;
@@ -48,15 +49,27 @@
       if(prompt&&!await api.confirm('Buluttaki taslağı yükle','Bu tarayıcıdaki içerik, buluttaki taslakla değişecek. Yerel düzenlemelerin gerekiyorsa önce JSON yedeği al.','Buluttan yükle')) {feedback='Yerel taslak korundu. Kaydetmeden önce buluttaki sürümü yükle.';loaded=false;return;}
       if(!api.replaceState(remote.payload))throw new Error('Bulut taslağı bu tarayıcıya kaydedilemedi.');
       revision=remote.revision;
-    }else revision=0;
+      savedFingerprint=JSON.stringify(remote.payload);
+    }else {revision=0;savedFingerprint='';}
     loaded=true;feedback=remote?'Buluttaki taslak bu tarayıcıya yüklendi.':'Bulutta henüz içerik yok. Mevcut site içeriğini kaydedebilirsin.';
+    if(cloud().loadPublication){try{publishedRevision=(await cloud().loadPublication())?.revision||0;}catch{publishedRevision=0;feedback+=' Yayın sürümü şu anda doğrulanamadı.';}}
   }
   async function save(publish=false) {
     if(!loaded)throw new Error('Önce buluttaki taslağı yükle.');
     let snapshot=api.getState(), before=JSON.stringify(snapshot);
 
     if(publish){
-      if(!await api.confirm('Bu sürümü sitede yayınla','Siteden alınan ve “Hazır” içerikler canlı sitede gösterilecek. Taslakların önceki yayını korunur. Yeni görseller herkese açılacak.','Yayınla')){feedback='Yayınlama iptal edildi.';return;}
+      let review='Siteden alınan ve “Hazır” içerikler canlı sitede gösterilecek. Taslakların önceki yayını korunur. Yeni görseller herkese açılacak.';
+      let previousSnapshot=null;
+      if(root.CMSStudio){const previous=await cloud().loadPublication();review=root.CMSStudio.review(snapshot,previous?.payload).text;
+        if(previous?.payload?.version===1){previousSnapshot=clone(previous.payload);previousSnapshot.activity=[];for(const group of ['pages','projects','posts'])for(const item of previousSnapshot[group])item.status='ready';}
+      }
+      if(!await api.confirm('Yayın öncesi değişiklikler',review,'Yayınla')){feedback='Yayınlama iptal edildi.';return;}
+      if(JSON.stringify(api.getState())!==before)throw new Error('İnceleme sırasında taslak değişti. Yeniden yayınla.');
+      if(root.CMSAssets){
+        const backup=await root.CMSAssets.create(snapshot,message=>{feedback=message;api.render();},previousSnapshot);
+        if(backup.failed.length&&!await api.confirm('Bazı görseller yedeklenemedi',backup.failed.map(x=>x.source+' — '+x.error).join('\n')+'\nEksik yedeğe rağmen yayınlamaya devam edilsin mi?','Yayınlamaya devam et')){feedback='Yedek eksik olduğu için yayınlama iptal edildi.';return;}
+      }
       const replacements=new Map();
       for(const media of snapshot.media) {
         if(media.src.startsWith('data:')){
@@ -65,16 +78,18 @@
           media.src=replacements.get(media.src);
         }
       }
-      for(const group of ['pages','projects','posts'])for(const item of snapshot[group])if(replacements.has(item.cover))item.cover=replacements.get(item.cover);
+      for(const group of ['pages','projects','posts'])for(const item of snapshot[group]){if(replacements.has(item.cover))item.cover=replacements.get(item.cover);if(item.seo&&replacements.has(item.seo.image))item.seo.image=replacements.get(item.seo.image);}
       if(JSON.stringify(api.getState())!==before)throw new Error('Yükleme sırasında yerel içerik değişti. Düzenlemelerin korundu; güncel taslakla yeniden yayınla.');
     }
     const saved=await cloud().saveDraft(snapshot,revision);revision=saved.revision;
+    savedFingerprint=JSON.stringify(snapshot);
     if(publish){
       // A local edit can finish while the cloud save is pending. Keep that edit
       // and the known saved revision; a new publish attempt can save it safely.
       if(JSON.stringify(api.getState())!==before)throw new Error('Bulut kaydı sırasında yerel içerik değişti. Yeni düzenlemelerin korundu; önceki taslak buluta kaydedildi ancak yayınlanmadı. Güncel taslakla yeniden yayınla.');
       if(!api.replaceState(snapshot))throw new Error('Taslak buluta kaydedildi ancak bu tarayıcıya kaydedilemedi. Yayınlama durduruldu; yerel depolamayı kontrol edip yeniden dene.');
       const result=await cloud().publish(revision);
+      publishedRevision=result.revision;
       lastPublication=new Date(result.publishedAt).toLocaleString('tr-TR');
       feedback=`Sürüm ${result.revision} Supabase’de yayınlandı. Site bağlantı dosyası yüklüyse yeni içerik sayfa yenilendiğinde görünür.`;
     }else feedback=`Taslak Supabase’e kaydedildi · sürüm ${revision}. Canlı yayın değişmedi.`;
@@ -90,6 +105,13 @@
     view:connectionView,
     loginView, canAccess,
     isDraftLoaded:()=>loaded&&canAccess(),
+    getSaveStatus(){
+      if(busy)return {label:'Bulut işlemi sürüyor…',kind:'progress'};
+      if(!loaded)return {label:'Bulut taslağı yüklenmedi',kind:'warning'};
+      if(!savedFingerprint||JSON.stringify(api.getState())!==savedFingerprint)return {label:'Yerel değişiklikler var',kind:'warning'};
+      if(publishedRevision===revision)return {label:'Yayın sürümü '+revision,kind:'live'};
+      return {label:'Bulutta kayıtlı · sürüm '+revision,kind:'saved'};
+    },
     install(workspace){
       api=workspace;
       try{
@@ -106,7 +128,7 @@
         }else if(event.target.id==='cloud-login-form'){
           event.preventDefault();const form=new FormData(event.target),email=String(form.get('email')),password=String(form.get('password'));event.target.reset();
           run(async()=>{
-            adminVerified=false;loaded=false;
+            adminVerified=false;loaded=false;savedFingerprint='';publishedRevision=0;
             try{
               await cloud().signIn(email,password);
               // This protected RPC checks cms_admins, even when no draft exists.
