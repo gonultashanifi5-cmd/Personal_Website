@@ -658,3 +658,30 @@ body:has(.app-shell[hidden]) .skip-link { display:none; }
 .connection-grid button:disabled { opacity:.45; cursor:not-allowed; }.connection-grid small { display:block; color:#777; line-height:1.6; }
 @media(max-width:1100px){.connection-grid{grid-template-columns:1fr}.connection-flow{gap:12px;padding:20px}.connection-flow>div{grid-template-columns:1fr}.connection-flow b{grid-row:auto}}
 @media(max-width:600px){.connection-flow{align-items:stretch;gap:16px;flex-direction:column}.connection-flow i{display:none}.connection-flow>div{grid-template-columns:35px 1fr}.connection-flow b{grid-row:1/3}.connection-grid .panel-body{padding:18px}}
+
+/* Admin Panel v2 · Frosted workspace */
+:root{--paper:rgba(255,255,255,.72);--canvas:#edf0f8;--border:rgba(116,124,164,.15);--shadow:0 10px 32px rgba(43,48,86,.055)}
+body{background:radial-gradient(ellipse at 18% 12%,#cbd6fa88,transparent 48%),radial-gradient(ellipse at 87% 29%,#e4d3f56b,transparent 44%),radial-gradient(ellipse at 66% 93%,#f4dfaa70,transparent 43%),#f0f2f8;background-attachment:fixed}
+.workspace{background:transparent}
+.sidebar{background:linear-gradient(160deg,rgba(31,35,60,.94),rgba(36,38,65,.88));border-right:1px solid #ffffff19;box-shadow:12px 0 40px #20244012;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
+.workspace-switch,.draft-note{background:#ffffff07;border-color:#ffffff18;box-shadow:inset 0 1px 0 #ffffff07}
+.nav-link.active{background:linear-gradient(115deg,#ecd08022,#ecd0800a);border-color:#e9cc7530;box-shadow:inset 0 1px 0 #ffffff06}
+.topbar{background:#ffffff80;border-bottom:1px solid #ffffffb3;box-shadow:0 4px 22px #32395604;backdrop-filter:blur(22px) saturate(145%);-webkit-backdrop-filter:blur(22px) saturate(145%)}
+.panel,.stat-card,.media-card{background:rgba(255,255,255,.72);border:1px solid #ffffffc7;border-radius:17px;box-shadow:var(--shadow),inset 0 1px 0 #fff9;backdrop-filter:blur(16px) saturate(135%);-webkit-backdrop-filter:blur(16px) saturate(135%)}
+.panel-heading{border-bottom-color:#727b9e13}.panel-bottom,.panel-bottom+.panel{background:transparent}
+.stat-card{transition:transform .2s,box-shadow .2s,border-color .2s}.stat-card:hover{transform:translateY(-3px);border-color:#d7c484;box-shadow:0 16px 40px #2b305612,inset 0 1px 0 #fff}
+.stat-icon{border:1px solid #ffffffb3;box-shadow:0 3px 10px #23243a06}
+.search-box{background:#ffffff70;border-color:#ffffffb3;border-radius:10px;box-shadow:inset 0 1px 3px #353b5a04}
+.btn-secondary{background:#ffffff8c;border-color:#b4badb4d;box-shadow:inset 0 1px 0 #fff9}.btn-secondary:hover{background:#ffffffc9;border-color:#aaaec7}
+.btn-primary{box-shadow:0 4px 14px #23243a14,inset 0 1px 0 #ffffff12}
+.page-table th{background:#ffffff4d;border-bottom-color:#727b9e13}.page-table td{border-bottom-color:#727b9e12}.page-table tbody tr:hover{background:#ffffff75}
+.tabs{background:#e4e7f380;border-color:#ffffffbd;border-radius:11px}.tab.active{box-shadow:0 2px 7px #3239560c}
+.connection-flow{background:linear-gradient(120deg,#ffffff80,#faf5e482);border-color:#ffffffc4;box-shadow:inset 0 1px 0 #fff9;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.connection-message{background:#edf5eead;border-color:#ffffffb3;box-shadow:inset 0 1px 0 #ffffff9e}
+.auth-screen{background:transparent}.auth-card{background:rgba(255,255,255,.72);border:1px solid #ffffffd9;border-radius:26px;box-shadow:0 24px 80px #30395712,inset 0 1px 0 #fff;backdrop-filter:blur(26px) saturate(135%);-webkit-backdrop-filter:blur(26px) saturate(135%)}
+.auth-card input,.field input,.field textarea,.field select{background:#ffffffa6;border-color:#a6aec535;border-radius:10px}
+.editor-dialog,.preview-dialog,.confirm-dialog{background:rgba(251,252,255,.91);border:1px solid #ffffffd9;box-shadow:0 28px 100px #20264030;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
+dialog::backdrop{background:#20264055;backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
+.dialog-header,.dialog-footer{background:#ffffff40;border-color:#727b9e16}.workspace-footer{color:#7e8498}
+@media(max-width:767px){.sidebar{background:rgba(31,35,60,.97)}.panel,.stat-card,.media-card{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}}
+@media(prefers-reduced-motion:reduce){.stat-card{transition:none}.stat-card:hover{transform:none}}
